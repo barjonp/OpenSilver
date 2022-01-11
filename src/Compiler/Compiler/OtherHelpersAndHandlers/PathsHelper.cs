@@ -171,7 +171,7 @@ namespace DotNetForHtml5
         /// <returns></returns>
         public static string ConvertToAbsolutePathWithComponentSyntax(string uri, string pathOfTheXamlFileWhereTheUriIsDeclared, string assemblyName)
         {
-            if (uri == null)
+            if (string.IsNullOrEmpty(uri))
             {
                 return null;
             }

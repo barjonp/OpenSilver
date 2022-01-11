@@ -870,26 +870,6 @@ else
                                     );
 
                                 }
-                                else if (isResourceDictionaryReferencedBySourceURI)
-                                {
-                                    //------------------------------------------------
-                                    // Add the type initialization from "Source" URI:
-                                    //------------------------------------------------
-                                    string sourceUri = element.Attribute("Source").Value; // Note: this attribute exists because we have checked earlier.
-                                    string absoluteSourceUri = PathsHelper.ConvertToAbsolutePathWithComponentSyntax(
-                                        sourceUri,
-                                        fileNameWithPathRelativeToProjectRoot,
-                                        assemblyNameWithoutExtension);
-
-                                    stringBuilder.AppendLine(
-                                        string.Format(
-                                            "var {0} = (({1})new {2}()).CreateComponent();",
-                                            elementUniqueNameOrThisKeyword,
-                                            $"{IXamlComponentFactoryClass}<{namespaceSystemWindows}.ResourceDictionary>",
-                                            XamlResourcesHelper.GenerateClassNameFromComponentUri(absoluteSourceUri)
-                                        )
-                                    );
-                                }
                                 else
                                 {
                                     //------------------------------------------------
@@ -1101,6 +1081,25 @@ else
                                                                 assemblyNameWithoutExtension,
                                                                 reflectionOnSeparateAppDomain
                                                             );
+                                                    }
+                                                    else if (elementTypeInCSharp == namespaceSystemWindows + ".ResourceDictionary" &&
+                                                             memberName == "Source")
+                                                    {
+                                                        string absoluteSourceUri = PathsHelper.ConvertToAbsolutePathWithComponentSyntax(
+                                                            attributeValue, fileNameWithPathRelativeToProjectRoot, assemblyNameWithoutExtension
+                                                        );
+
+                                                        stringBuilder.AppendLine(
+                                                            string.Format(
+                                                                "{0}.ResourceDictionary_SetSource({1}, {2}, {3});",
+                                                                RuntimeHelperClass,
+                                                                elementUniqueNameOrThisKeyword,
+                                                                string.IsNullOrEmpty(attributeValue) ? "null" : ConvertFromInvariantString(attributeValue, "System.Uri", false, false),
+                                                                string.IsNullOrEmpty(absoluteSourceUri) ? "null" : ConvertFromInvariantString(absoluteSourceUri, "System.Uri", false, false)
+                                                            )
+                                                        );
+                                                        
+                                                        codeForInstantiatingTheAttributeValue = null;
                                                     }
                                                     else
                                                     {

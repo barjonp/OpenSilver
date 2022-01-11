@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using CSHTML5.Internal;
 
 #if OPENSILVER
@@ -53,6 +54,7 @@ namespace Windows.UI.Xaml
         private PrivateFlags _flags = 0;
         private Dictionary<object, object> _baseDictionary;
         private ResourceDictionaryCollection _mergedDictionaries;
+        private Uri _source = new Uri("", UriKind.Relative);
 
         //
         // Note: Not supported in WPF and Silverlight.
@@ -227,7 +229,15 @@ namespace Windows.UI.Xaml
         /// Gets or sets a Uniform Resource Identifier (URI) that provides the source
         /// location of a merged resource dictionary.
         /// </summary>
-        public Uri Source { get; set; }  // NOTE: This is used during COMPILE-TIME only.
+        public Uri Source
+        {
+            get { return _source; }
+            set
+            {
+                this._source = value ?? new Uri("", UriKind.Relative);
+                this.LoadFrom(value);
+            }
+        }
 
         /// <summary>
         /// Gets an <see cref="ICollection"/> object containing the values of the <see cref="ResourceDictionary"/>.
@@ -1338,5 +1348,201 @@ namespace Windows.UI.Xaml
         }
 
         #endregion
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal void SetSourceInternal(Uri source)
+        {
+            this._source = source ?? new Uri("", UriKind.Relative);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal void LoadFrom(Uri source)
+        {
+            ResourceDictionary loadedRD = this.LoadResourceDictionaryFromUri(source);
+
+            if (loadedRD == null)
+            {
+                throw new InvalidOperationException("ResourceDictionary created failed.");
+            }
+
+            var oldDictionary = this._baseDictionary;
+
+            // ReferenceCopy all the key-value pairs in the _baseDictionary
+            this._baseDictionary = loadedRD._baseDictionary;
+
+            // Silverlight does not clear the base dictionary
+            if (oldDictionary != null)
+            {
+                foreach (var kvp in oldDictionary)
+                {
+                    this._baseDictionary[kvp.Key] = kvp.Value;
+                }
+            }
+
+            // ReferenceCopy all the entries in the MergedDictionaries collection
+            this._mergedDictionaries = loadedRD._mergedDictionaries;
+
+            // Copy over the HasImplicitStyles flag
+            this.HasImplicitStyles = loadedRD.HasImplicitStyles;
+
+            // Copy over the HasImplicitDataTemplates flag
+            this.HasImplicitDataTemplates = loadedRD.HasImplicitDataTemplates;
+
+            // Copy over the InvalidatesImplicitDataTemplateResources flag
+            this.InvalidatesImplicitDataTemplateResources = loadedRD.InvalidatesImplicitDataTemplateResources;
+
+            // Set inheritance context on the copied values
+            if (this.InheritanceContext != null)
+            {
+                this.AddInheritanceContextToValues();
+            }
+
+            // Propagate parent owners to each of the acquired merged dictionaries
+            if (this._mergedDictionaries != null)
+            {
+                for (int i = 0; i < this._mergedDictionaries.Count; i++)
+                {
+                    this.PropagateParentOwners(this._mergedDictionaries[i]);
+                }
+            }
+
+            if (!this.IsInitializePending)
+            {
+                // Fire Invalidations for the changes made by asigning a new Source
+                this.NotifyOwners(new ResourcesChangeInfo(null, this));
+            }
+        }
+
+        private ResourceDictionary LoadResourceDictionaryFromUri(Uri source)
+        {
+            if (source == null)
+            {
+                return new ResourceDictionary();
+            }
+
+            if (!GetXamlPagePath(source.OriginalString, out string assemblyName, out string pagePathAndNameWithoutAssembly))
+            {
+                throw new InvalidOperationException("Source must use the ';component/' syntax.");
+            }
+
+            string factoryTypeName = XamlResourcesHelper.GetXamlPageFactoryTypeName(
+                "/" + assemblyName + XamlResourcesHelper.ComponentDelimiterWithoutSlash + pagePathAndNameWithoutAssembly
+            );
+            Type factoryType = Type.GetType(factoryTypeName + ", " + assemblyName);
+
+            if (factoryType == null)
+            {
+                throw new InvalidOperationException($"Can't create a ResourceDictionary from the uri '{this._source}'.");
+            }
+
+            return factoryType.GetMethod("Instantiate").Invoke(null, null) as ResourceDictionary;
+        }
+
+        private static bool GetXamlPagePath(string pagePathAndName, out string assemblyPartSource, out string pagePathAndNameWithoutAssembly)
+        {
+            assemblyPartSource = null;
+            pagePathAndNameWithoutAssembly = pagePathAndName;
+
+            if (pagePathAndName.Contains(XamlResourcesHelper.ComponentDelimiter))
+            {
+                string[] pagePathAndNameParts = pagePathAndName.Split(new string[] { XamlResourcesHelper.ComponentDelimiterWithoutSlash }, StringSplitOptions.RemoveEmptyEntries);
+                if (pagePathAndNameParts.Length != 2)
+                {
+                    throw new InvalidOperationException("Attempted to load local XAML with an invalid syntax.  When a ';component/' is present, it must have the assembly name on the left side, and the page path and name on the right.");
+                }
+                assemblyPartSource = pagePathAndNameParts[0];
+                if (assemblyPartSource[0] == '/')
+                {
+                    assemblyPartSource = assemblyPartSource.Substring(1);
+                }
+                pagePathAndNameWithoutAssembly = pagePathAndNameParts[1];
+            }
+
+            if (String.IsNullOrEmpty(assemblyPartSource))
+            {
+                return false;
+            }
+
+            // In case the Uri contains international characters (ex: 完全采用统.xaml), we need to escape them.
+            // because Application.GetResourceStream expects an escaped Uri.
+            pagePathAndNameWithoutAssembly = Uri.EscapeUriString(pagePathAndNameWithoutAssembly);
+            assemblyPartSource = Uri.EscapeUriString(assemblyPartSource);
+
+            return true;
+        }
+    }
+
+    internal static class XamlResourcesHelper
+    {
+        internal const string ComponentDelimiter = ";component/";
+        internal const string ComponentDelimiterWithoutSlash = ";component";
+
+        internal static string GetXamlPageFactoryTypeName(string pagePath)
+        {
+            // Convert to TitleCase (so that when we remove the spaces, it is easily readable):
+            string className = MakeTitleCase(pagePath);
+
+            // If file name contains invalid chars, remove them:
+            className = Regex.Replace(className, @"\W", "ǀǀ"); //Note: this is not a pipe (the thing we get with ctrl+alt+6), it is U+01C0
+
+            // If class name doesn't begin with a letter, insert an underscore:
+            if (char.IsDigit(className, 0))
+            {
+                className = className.Insert(0, "_");
+            }
+
+            // Remove white space:
+            className = className.Replace(" ", string.Empty);
+
+            className += "ǀǀFactory"; //Note: this is not a pipe (the thing we get with ctrl+alt+6), it is U+01C0
+
+            return className;
+        }
+
+        private static string MakeTitleCase(string str)
+        {
+            string result = "";
+            string lowerStr = str.ToLower();
+            int length = str.Length;
+            bool makeUpper = true;
+            int lastCopiedIndex = -1;
+            /****************************
+            * HOW THIS WORKS
+            *
+            * We go through all the characters of the string.
+            * If any is not an alphanumerical character, we make the next alphanumerical character uppercase.
+            * To do so, we copy the string (on which we call toLower) bit by bit into a new variable,
+            * each bit being the part between two uppercase characters, and while inserting the
+            * uppercase version of the character between each bit. then we add the end of the string.
+            *****************************/
+
+            for (int i = 0; i < length; ++i)
+            {
+                char ch = lowerStr[i];
+                if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '0'))
+                {
+                    if (makeUpper && ch >= 'a' && ch <= 'z')
+                    {
+                        if (!(lastCopiedIndex == -1 && i == 0))
+                        {
+                            result += lowerStr.Substring(lastCopiedIndex + 1, i - lastCopiedIndex - 1);
+                        }
+                        result += (char)(ch - 32);
+                        lastCopiedIndex = i;
+                    }
+                    makeUpper = false;
+                }
+                else
+                {
+                    makeUpper = true;
+                }
+            }
+
+            if (lastCopiedIndex < length - 1)
+            {
+                result += str.Substring(lastCopiedIndex + 1);
+            }
+            return result;
+        }
     }
 }

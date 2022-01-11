@@ -14,6 +14,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 
 #if MIGRATION
 using System.Windows;
@@ -111,6 +112,13 @@ namespace OpenSilver.Internal.Xaml
             {
                 nameScope.RegisterName(name, scopedElement);
             }
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void ResourceDictionary_SetSource(ResourceDictionary rd, Uri displayURI, Uri sourceURI)
+        {
+            rd.SetSourceInternal(displayURI);
+            rd.LoadFrom(sourceURI);
         }
     }
 }
