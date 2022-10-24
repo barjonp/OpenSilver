@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask AssemblyFile="$(MSBuildThisFileDirectory)..\tools\OpenSilver.Compiler.Resources.dll" TaskName="DotNetForHtml5.Compiler.ResourcesExtractorAndCopier" />
+
+  <PropertyGroup>
+    <BuildDependsOn>
+      CSharpXamlForHtml5BeforeBuild;
+      $(BuildDependsOn);
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);OPENSILVER</DefineConstants>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!--============================================================
+  Get a consistent way to access the output directory, independent on whether OutputPath is Relative or Absolute:
+  ============================================================-->
+  <PropertyGroup>
+    <OutputAssemblyDirectory Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(OutputPath)', '^.[^:].*'))">$(MSBuildProjectDirectory)\$(OutputPath)</OutputAssemblyDirectory>
+    <OutputAssemblyDirectory Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(OutputPath)', '^.:.*'))">$(OutputPath)</OutputAssemblyDirectory>
+  </PropertyGroup>
+
+  <!--============================================================
+  BEFORE BUILD
+  ============================================================-->
+  <Target Name="CSharpXamlForHtml5BeforeBuild">
+    <Exec Condition="'$(OpenSilverType)'=='' Or $(OpenSilverType)&lt;2"
+          Command="explorer.exe https://opensilver.net/permalinks/update/alpha7.aspx" Timeout="2000" ContinueOnError="True"></Exec>
+    <Error Condition="'$(OpenSilverType)'=='' Or $(OpenSilverType)&lt;2"
+           Text="The version of OpenSilver that you are referencing - which is newer and contains many improvements - requires migration of your project. To fix this issue, please follow the steps described at: https://opensilver.net/permalinks/update/alpha7.aspx"/>
+    <Exec Condition="$(OpenSilverType)&lt;3"
+          Command="explorer.exe https://opensilver.net/permalinks/update/alpha19.aspx" Timeout="2000" ContinueOnError="True"></Exec>
+    <Error Condition="$(OpenSilverType)&lt;3"
+           Text="The version of OpenSilver that you are referencing - which is newer and contains many improvements - requires migration of your project. To fix this issue, please follow the steps described at: https://opensilver.net/permalinks/update/alpha19.aspx"/>
+    <Exec Condition="$(OpenSilverType)&lt;4"
+          Command="explorer.exe https://opensilver.net/permalinks/update/alpha20.aspx" Timeout="2000" ContinueOnError="True"></Exec>
+    <Error Condition="$(OpenSilverType)&lt;4"
+           Text="The version of OpenSilver that you are referencing - which is newer and contains many improvements - requires migration of your project. To fix this issue, please follow the steps described at: https://opensilver.net/permalinks/update/alpha20.aspx"/>
+  </Target>
+
+  <!--============================================================
+  BEFORE POST BUILD
+  ============================================================-->
+  <Target Name="CSharpXamlForHtml5BeforePostBuild" BeforeTargets="PostBuildEvent">
+
+    <Message Text="OpenSilver Before post build." Importance="normal"/>
+
+    <ItemGroup>
+      <OutputAssembly Include="$(OutputAssemblyDirectory)\$(AssemblyName).dll" />
+    </ItemGroup>
+
+    <!--============================================================
+      Setting the proper path for copying the resources:
+      ============================================================-->
+    <PropertyGroup>
+      <!-- Default output root path. This path can be either absolute, or relative to the "bin\Debug\" folder.. -->
+      <Cshtml5OutputRootPath>..\..\..\wwwroot\</Cshtml5OutputRootPath>
+      <!-- Default sub-path for output resources. This path needs to be relative to the output root path. -->
+      <Cshtml5OutputResourcesPath>resources\</Cshtml5OutputResourcesPath>
+    </PropertyGroup>
+
+    <!--============================================================
+      Copying the js/css libraries that come with OpenSilver:
+      ============================================================-->
+    <ItemGroup>
+      <MySourceFiles Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\js_css\*" />
+    </ItemGroup>
+
+    <Message Text="Copying OpenSilver's required js/css libraries."
+             Importance="normal"/>
+
+    <Copy SourceFiles="@(MySourceFiles)"
+          SkipUnchangedFiles="true"
+          DestinationFolder="$(BaseIntermediateOutputPath)..\wwwroot\libs\" />
+
+    <PropertyGroup>
+      <ResourcesSourceLocation>$(OutputAssemblyDirectory)</ResourcesSourceLocation>
+      <ResourcesSourceLocation Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'net6.0'">$(OutputAssemblyDirectory)\wwwroot\_framework</ResourcesSourceLocation>
+      <ResourcesRootOutput>$(Cshtml5OutputRootPath)</ResourcesRootOutput>
+      <ResourcesRootOutput Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'net6.0'">$(OutputAssemblyDirectory)\..\..\..\wwwroot\</ResourcesRootOutput>
+    </PropertyGroup>
+
+    <!--============================================================
+      ResourceExtractorAndCopier (only during Pass 1)
+      ============================================================-->
+    <ResourcesExtractorAndCopier Condition="'$(SkipResourcesExtractorAndCopier)'!='true'"
+                                 SourceAssembly="$(ResourcesSourceLocation)\$(AssemblyName).dll"
+                                 OutputRootPath="$(ResourcesRootOutput)"
+                                 OutputResourcesPath="$(Cshtml5OutputResourcesPath)"
+                                 AssembliesToIgnore="mscorlib|System.Core|Microsoft.CSharp"
+                                 SupportedExtensions=".js|.css|.png|.jpg|.gif|.ico|.mp4|.ogv|.webm|.3gp|.mp3|.ogg|.txt|.xml|.ttf|.woff|.woff2|.cur|.config|.ClientConfig|.htm|.html|.svg"
+                                 CoreAssemblyFiles="$(OutputPath)\OpenSilver.dll">
+      <Output TaskParameter="CopiedResXFiles" PropertyName="CopiedResXFiles"/>
+      <Output TaskParameter="IsSuccess" PropertyName="ResourceExtractorAndCopierIsSuccess"/>
+    </ResourcesExtractorAndCopier>
+
+  </Target>
+
+</Project>

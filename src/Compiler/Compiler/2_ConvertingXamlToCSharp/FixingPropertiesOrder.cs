@@ -23,12 +23,16 @@ namespace DotNetForHtml5.Compiler
 {
     internal static class FixingPropertiesOrder
     {
-        public static void FixPropertiesOrder(XDocument doc, ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain)
+        public static void FixPropertiesOrder(XDocument doc,
+            ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain,
+            ConversionSettings settings)
         {
-            FixSelectorItemsSourceOrder(doc.Root, reflectionOnSeparateAppDomain);
+            FixSelectorItemsSourceOrder(doc.Root, reflectionOnSeparateAppDomain, settings);
         }
 
-        public static void FixSelectorItemsSourceOrder(XElement currentElement, ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain)
+        public static void FixSelectorItemsSourceOrder(XElement currentElement,
+            ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain,
+            ConversionSettings settings)
         {
             // Check if the current element is an object (rather than a property):
             bool isElementAnObjectRatherThanAProperty = !currentElement.Name.LocalName.Contains(".");
@@ -42,10 +46,18 @@ namespace DotNetForHtml5.Compiler
                 if(hasItemsSourceProperty)
                 {
                     // Get the namespace, local name, and optional assembly that correspond to the element:
-                    string namespaceName, localTypeName, assemblyNameIfAny;
-                    GettingInformationAboutXamlTypes.GetClrNamespaceAndLocalName(currentElement.Name, out namespaceName, out localTypeName, out assemblyNameIfAny);
-                    string selectorNamespaceName, selectorLocalTypeName, selectorAssemblyNameIfAny;
-                    GettingInformationAboutXamlTypes.GetClrNamespaceAndLocalName("Selector", out selectorNamespaceName, out selectorLocalTypeName, out selectorAssemblyNameIfAny);
+                    GettingInformationAboutXamlTypes.GetClrNamespaceAndLocalName(
+                        currentElement.Name,
+                        settings.EnableImplicitAssemblyRedirection,
+                        out string namespaceName,
+                        out string localTypeName,
+                        out string assemblyNameIfAny);
+                    GettingInformationAboutXamlTypes.GetClrNamespaceAndLocalName(
+                        "Selector",
+                        settings.EnableImplicitAssemblyRedirection,
+                        out string selectorNamespaceName,
+                        out string selectorLocalTypeName,
+                        out string selectorAssemblyNameIfAny);
                     bool typeInheritsFromSelector = reflectionOnSeparateAppDomain.IsTypeAssignableFrom(namespaceName, localTypeName, assemblyNameIfAny, selectorNamespaceName, selectorLocalTypeName, selectorAssemblyNameIfAny);
                     //Type elementType = reflectionOnSeparateAppDomain.GetCSharpEquivalentOfXamlType(namespaceName, localTypeName, assemblyNameIfAny);
                     //if the type inherits from the element, we want to put the itemsSource attribute to the end:
@@ -62,7 +74,7 @@ namespace DotNetForHtml5.Compiler
             {
                 foreach(XElement child in currentElement.Elements())
                 {
-                    FixSelectorItemsSourceOrder(child, reflectionOnSeparateAppDomain);
+                    FixSelectorItemsSourceOrder(child, reflectionOnSeparateAppDomain, settings);
                 }
             }
         }

@@ -46,27 +46,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="..\..\Compiler\Compiler\OtherHelpersAndHandlers\ActivationHelpers_SharedWithOtherProjects.cs">
-      <Link>ActivationHelpers_SharedWithOtherProjects.cs</Link>
-    </Compile>
     <Compile Include="..\..\Compiler\Compiler\OtherHelpersAndHandlers\Constants.cs">
       <Link>Constants.cs</Link>
     </Compile>
-    <Compile Include="..\..\Compiler\Compiler\OtherHelpersAndHandlers\PathsHelper.cs">
+    <Compile Include="..\..\Compiler\Compiler.Common\Helpers\PathsHelper.cs">
       <Link>SupportClasses\PathsHelper.cs</Link>
     </Compile>
-    <Compile Include="..\..\Compiler\Compiler\OtherHelpersAndHandlers\RegistryHelpers_SharedWithOtherProjects.cs">
-      <Link>RegistryHelpers_SharedWithOtherProjects.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Compiler\Compiler\OtherHelpersAndHandlers\TrialHelpers_SharedWithOtherProjects.cs">
-      <Link>TrialHelpers_SharedWithOtherProjects.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Compiler\Compiler\OtherHelpersAndHandlers\ValidityHelpers_SharedWithOtherProjects.cs">
-      <Link>ValidityHelpers_SharedWithOtherProjects.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Compiler\Compiler\OtherHelpersAndHandlers\VersionInformation_SharedWithOtherProjects.cs">
-      <Link>VersionInformation_SharedWithOtherProjects.cs</Link>
-    </Compile>
+    <Compile Include="ActivationHelpers_SharedWithOtherProjects.cs" />
     <Compile Include="Compilation\CompilationState.cs" />
     <Compile Include="Console\ConsoleControl.xaml.cs">
       <DependentUpon>ConsoleControl.xaml</DependentUpon>
@@ -101,6 +87,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="RegistryHelpers_SharedWithOtherProjects.cs" />
     <Compile Include="SimulatorLauncher.cs" />
     <Compile Include="SimulatorLaunchParameters.cs" />
     <Compile Include="SupportClasses\CookieData.cs" />
@@ -126,6 +113,9 @@
     <Compile Include="Debugging\ChromiumDevTools.xaml.cs">
       <DependentUpon>ChromiumDevTools.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TrialHelpers_SharedWithOtherProjects.cs" />
+    <Compile Include="ValidityHelpers_SharedWithOtherProjects.cs" />
+    <Compile Include="VersionInformation_SharedWithOtherProjects.cs" />
     <Compile Include="XamlInspection\TreeViewDataTemplateSelector.cs" />
     <Compile Include="XamlInspection\TreeNode.cs" />
     <Compile Include="XamlInspection\XamlInspectionTreeView.xaml.cs">

@@ -1,5 +1,4 @@
 ﻿
-
 /*===================================================================================
 * 
 *   Copyright (c) Userware (OpenSilver.net, CSHTML5.com)
@@ -17,7 +16,6 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
@@ -26,9 +24,7 @@ using System.Threading;
 
 namespace DotNetForHtml5.Compiler
 {
-    //[LoadInSeparateAppDomain]
-    //[Serializable]
-    public class XamlPreprocessor : Task // AppDomainIsolatedTask
+    public class XamlPreprocessor : Task
     {
         [Required]
         public string SourceFile { get; set; }
@@ -41,9 +37,6 @@ namespace DotNetForHtml5.Compiler
 
         [Required]
         public string AssemblyNameWithoutExtension { get; set; }
-
-        [Required]
-        public string CoreAssemblyFiles { get; set; }
 
         [Required]
         public bool IsSecondPass { get; set; }
@@ -62,16 +55,6 @@ namespace DotNetForHtml5.Compiler
         public bool IsSLMigration { get; set; }
 
         [Required]
-        public bool IsBridgeBasedVersion { get; set; }
-
-        [Required]
-        public string ActivationAppPath { get; set; }
-
-        //public string SourceAssemblyForPass2 { get; set; } // Used only in Pass 2.
-
-        public string CSharpXamlForHtml5OutputType { get; set; }
-
-        [Required]
         public string OutputRootPath { get; set; }
 
         [Required]
@@ -83,20 +66,41 @@ namespace DotNetForHtml5.Compiler
         [Required]
         public string OutputResourcesPath { get; set; }
 
-#if BRIDGE
-        [Required]
-#endif
-        public string NameOfAssembliesThatDoNotContainUserCode { get; set; }
-
         [Required]
         public string Flags { get; set; }
 
         public override bool Execute()
         {
-            return Execute(SourceFile, OutputFile, FileNameWithPathRelativeToProjectRoot, AssemblyNameWithoutExtension, CoreAssemblyFiles, IsSecondPass, IsSLMigration, new LoggerThatUsesTaskOutput(this), ActivationAppPath, CSharpXamlForHtml5OutputType, OverrideOutputOnlyIfSourceHasChanged, OutputRootPath, OutputAppFilesPath, OutputLibrariesPath, OutputResourcesPath, Flags, IsBridgeBasedVersion, NameOfAssembliesThatDoNotContainUserCode);
+            return ExecuteImpl(
+                SourceFile,
+                OutputFile,
+                FileNameWithPathRelativeToProjectRoot,
+                AssemblyNameWithoutExtension,
+                IsSecondPass,
+                IsSLMigration,
+                new LoggerThatUsesTaskOutput(this),
+                OverrideOutputOnlyIfSourceHasChanged,
+                OutputRootPath,
+                OutputAppFilesPath,
+                OutputLibrariesPath,
+                OutputResourcesPath,
+                Flags);
         }
 
-        public static bool Execute(string sourceFile, string outputFile, string fileNameWithPathRelativeToProjectRoot, string assemblyNameWithoutExtension, string coreAssemblyFiles, bool isSecondPass, bool isSLMigration, ILogger logger, string activationAppPath, string cSharpXamlForHtml5OutputType, bool overrideOutputOnlyIfSourceHasChanged, string outputRootPath, string outputAppFilesPath, string outputLibrariesPath, string outputResourcesPath, string flagsString, bool isBridgeBasedVersion, string nameOfAssembliesThatDoNotContainUserCode)
+        private static bool ExecuteImpl(
+            string sourceFile,
+            string outputFile,
+            string fileNameWithPathRelativeToProjectRoot,
+            string assemblyNameWithoutExtension,
+            bool isSecondPass,
+            bool isSLMigration,
+            ILogger logger,
+            bool overrideOutputOnlyIfSourceHasChanged,
+            string outputRootPath,
+            string outputAppFilesPath,
+            string outputLibrariesPath,
+            string outputResourcesPath,
+            string flagsString)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -116,32 +120,11 @@ namespace DotNetForHtml5.Compiler
                         throw new Exception(operationName + " failed because the FileNameWithPathRelativeToProjectRoot argument is invalid.");
                     if (string.IsNullOrEmpty(assemblyNameWithoutExtension))
                         throw new Exception(operationName + " failed because the AssemblyNameWithoutExtension argument is invalid.");
-                    if (string.IsNullOrEmpty(coreAssemblyFiles))
-                        throw new Exception(operationName + " failed because the core assembly file argument is invalid.");
 
                     HashSet<string> flags = (flagsString != null ? new HashSet<string>(flagsString.Split(';')) : new HashSet<string>());
 
-#if REQUIRE_ACTIVATION_FOR_SILVERLIGHT_MIGRATION
-
-#if SILVERLIGHTCOMPATIBLEVERSION
-
-#if !BRIDGE
-                    //------- Check SL Migration license (unless we are compiling a class library, in which case we do not want to check so that it is more convenient for developing Extensions that work with any CSHTML5 edition) -------
-                    if (cSharpXamlForHtml5OutputType == null || cSharpXamlForHtml5OutputType.ToLower() != "library")
-                    {
-                        if (!CheckSLMigrationLicense(logger, activationAppPath, flags))
-                        {
-                            return false;
-                        }
-                    }
-#endif
-
-#endif
-
-#endif
-
                     //------- DISPLAY THE PROGRESS -------
-                    logger.WriteMessage(operationName + " started for file \"" + sourceFile + "\". Output file: \"" + outputFile + "\". FileNameWithPathRelativeToProjectRoot: \"" + fileNameWithPathRelativeToProjectRoot + "\". AssemblyNameWithoutExtension: \"" + assemblyNameWithoutExtension + "\". Core assembly files: \"" + coreAssemblyFiles + "\". IsSecondPass: " + isSecondPass.ToString() + "\".");
+                    logger.WriteMessage(operationName + " started for file \"" + sourceFile + "\". Output file: \"" + outputFile + "\". FileNameWithPathRelativeToProjectRoot: \"" + fileNameWithPathRelativeToProjectRoot + "\". AssemblyNameWithoutExtension: \"" + assemblyNameWithoutExtension + "\". IsSecondPass: " + isSecondPass.ToString() + "\".");
                     //todo: do not display the output file location?
 
                     // Read the XAML file:
@@ -162,7 +145,19 @@ namespace DotNetForHtml5.Compiler
                                 throw new Exception("ReflectionOnSeparateAppDomainHandler.Current is null. It should not be null because it was supposed to be populated by the 'BeforeXamlPreprocessor' task. Please verify that the MSBuild Targets are up to date.");
 
                             // Convert XAML to CS:
-                            string generatedCode = ConvertingXamlToCSharp.Convert(xaml, sourceFile, fileNameWithPathRelativeToProjectRoot, assemblyNameWithoutExtension, reflectionOnSeparateAppDomain, isFirstPass: !isSecondPass, isSLMigration: isSLMigration, outputRootPath: outputRootPath, outputAppFilesPath: outputAppFilesPath, outputLibrariesPath: outputLibrariesPath, outputResourcesPath: outputResourcesPath, logger: logger);
+                            string generatedCode = ConvertingXamlToCSharp.Convert(
+                                xaml,
+                                sourceFile,
+                                fileNameWithPathRelativeToProjectRoot,
+                                assemblyNameWithoutExtension,
+                                reflectionOnSeparateAppDomain,
+                                isFirstPass: !isSecondPass,
+                                isSLMigration: isSLMigration,
+                                outputRootPath: outputRootPath,
+                                outputAppFilesPath: outputAppFilesPath,
+                                outputLibrariesPath: outputLibrariesPath,
+                                outputResourcesPath: outputResourcesPath,
+                                logger: logger);
 
                             // Add the header that contains the file hash so as to avoid re-processing the file if not needed:
                             generatedCode = CreateHeaderContainingHash(generatedCode, xaml, isSecondPass)
@@ -224,7 +219,7 @@ namespace DotNetForHtml5.Compiler
             }
         }
 
-        static bool DetermineIfTheXamlFileNeedsToBeProcessed(string xaml, string outputFile, bool overrideOutputOnlyIfSourceHasChanged, bool isSecondPass)
+        private static bool DetermineIfTheXamlFileNeedsToBeProcessed(string xaml, string outputFile, bool overrideOutputOnlyIfSourceHasChanged, bool isSecondPass)
         {
             //----------------------------------------------------------------
             // This method checks if the Hash of the source XAML has changed.
@@ -280,32 +275,6 @@ namespace DotNetForHtml5.Compiler
             return true;
         }
 
-        static bool CheckSLMigrationLicense(ILogger logger, string activationAppPath, HashSet<string> flags)
-        {
-            //if the user tries to use the SL Migration edition, we check whether it is allowed or not here even though it has nothing to do with the Xaml Preprocessor because it is the only thing that the user cannot remove from the targets.
-            if (!ActivationHelpers.IsFeatureEnabled(Constants.ENTERPRISE_EDITION_FEATURE_ID, flags) && !ActivationHelpers.IsFeatureEnabled(Constants.SL_MIGRATION_EDITION_FEATURE_ID, flags))
-            {
-                // Display the ActivationApp:
-                string explanationToDisplayInActivationApp = string.Format("You need the Silverlight Migration Edition in order to compile Silverlight-compatible projects.");
-                string explanationToDisplayInErrorsWindow = explanationToDisplayInActivationApp + " It can be obtained from http://www.cshtml5.com - Please rebuild the project to try again.";
-                ActivationHelpers.DisplayActivationApp(activationAppPath, Constants.SL_MIGRATION_EDITION_FEATURE_ID, explanationToDisplayInActivationApp);
-
-                // If we are in trial mode, we can continue without displaying any errors, otherwise we must stop compilation and raise the error:
-                int unused;
-                if (TrialHelpers.IsTrial(Constants.SL_MIGRATION_EDITION_FEATURE_ID, out unused) == TrialHelpers.TrialStatus.Running) //Note: we don't check for the enterprise edition since there is no trial for this edition.
-                {
-                    //do nothing
-                    return true;
-                }
-                else
-                {
-                    logger.WriteError(explanationToDisplayInErrorsWindow);
-                    return false;
-                }
-            }
-            return true;
-        }
-
         /// <summary>
         /// Adds a header to avoid processing the XAML file multiple times if its hash has not changed since the last time.
         /// </summary>
@@ -313,7 +282,7 @@ namespace DotNetForHtml5.Compiler
         /// <param name="originalXaml"></param>
         /// <param name="isSecondPass"></param>
         /// <returns></returns>
-        static string CreateHeaderContainingHash(string generatedCode, string originalXaml, bool isSecondPass)
+        private static string CreateHeaderContainingHash(string generatedCode, string originalXaml, bool isSecondPass)
         {
             string fileHash = GetHashString(originalXaml);
             string passNumber = (isSecondPass ? "2" : "1");
@@ -322,7 +291,7 @@ namespace DotNetForHtml5.Compiler
             return header;
         }
 
-        static string GetHashString(string inputString)
+        private static string GetHashString(string inputString)
         {
             StringBuilder sb = new StringBuilder();
             foreach (byte b in GetHash(inputString))
@@ -331,7 +300,7 @@ namespace DotNetForHtml5.Compiler
             return sb.ToString();
         }
 
-        static byte[] GetHash(string inputString)
+        private static byte[] GetHash(string inputString)
         {
             HashAlgorithm algorithm = MD5.Create();  //or use SHA1.Create();
             return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));

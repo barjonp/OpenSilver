@@ -320,8 +320,7 @@ ends with "".Browser"" in your solution.";
 
             switch (assemblyLocalName)
             {
-                //case Constants.NAME_OF_CORE_ASSEMBLY_USING_BLAZOR:
-                case Constants.NAME_OF_CORE_ASSEMBLY_SLMIGRATION_USING_BLAZOR:
+                case Constants.NAME_OF_CORE_ASSEMBLY_USING_BLAZOR:
                 case "OpenSilver.Controls.Data":
                 case "OpenSilver.Controls.Data.Input":
                 case "OpenSilver.Controls.Data.DataForm.Toolkit":

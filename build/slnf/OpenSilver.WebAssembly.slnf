@@ -1,0 +1,11 @@
+{
+  "solution": {
+    "path": "..\\..\\src\\OpenSilver.sln",
+    "projects": [
+      "Runtime\\JSInterop\\OpenSilver.JSInterop.csproj",
+      "WebAssembly\\OpenSilver.Wasm\\OpenSilver.Wasm.csproj",
+      "Compiler\\Compiler.Common\\Compiler.Common.OpenSilver.csproj",
+      "Compiler\\Compiler.ResourcesExtractor\\Compiler.ResourcesExtractor.OpenSilver.csproj"
+    ]
+  }
+}

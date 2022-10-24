@@ -105,7 +105,7 @@ namespace DotNetForHtml5.Compiler
             string assemblyNameWithoutExtension,
             ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain,
             bool isFirstPass,
-            bool isSLMigration,
+            ConversionSettings settings,
             string codeToPutInTheInitializeComponentOfTheApplicationClass,
             ILogger logger)
         {
@@ -115,8 +115,8 @@ namespace DotNetForHtml5.Compiler
                 generator = new GeneratorPass1(doc, 
                     assemblyNameWithoutExtension, 
                     fileNameWithPathRelativeToProjectRoot, 
-                    reflectionOnSeparateAppDomain, 
-                    isSLMigration);
+                    reflectionOnSeparateAppDomain,
+                    settings);
             }
             else
             {
@@ -125,7 +125,7 @@ namespace DotNetForHtml5.Compiler
                     fileNameWithPathRelativeToProjectRoot,
                     assemblyNameWithoutExtension,
                     reflectionOnSeparateAppDomain,
-                    isSLMigration,
+                    settings,
                     codeToPutInTheInitializeComponentOfTheApplicationClass,
                     logger);
             }
@@ -261,10 +261,9 @@ namespace {namespaceStringIfAny}
         }
 
         private static void GetClassInformationFromXaml(XDocument doc, 
-            ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain, 
+            ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain,
             out string className, 
             out string namespaceStringIfAny, 
-            out string baseType, 
             out bool hasCodeBehind)
         {
             // Read the "{x:Class}" attribute:
@@ -300,11 +299,6 @@ namespace {namespaceStringIfAny}
                 hasCodeBehind = false;
                 //todo: handle the case where there is a code-behing but the user has simply forgotten the "x:Class" attribute, in which case the user will currently get strange error messages.
             }
-
-            // Get the base type of the control:
-            string namespaceName, localTypeName, assemblyNameIfAny;
-            GettingInformationAboutXamlTypes.GetClrNamespaceAndLocalName(doc.Root.Name, out namespaceName, out localTypeName, out assemblyNameIfAny);
-            baseType = reflectionOnSeparateAppDomain.GetCSharpEquivalentOfXamlTypeAsString(namespaceName, localTypeName, assemblyNameIfAny, ifTypeNotFoundTryGuessing: true); // Note: we set "ifTypeNotFoundTryGuessing" to true because the type will not be found during Pass1 for example in the case that tthe root of the XAML file is: <myNamespace:MyCustumUserControlDerivedClass .../>
         }
 
         private static string GetFullTypeName(string namespaceName, string typeName)

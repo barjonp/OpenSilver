@@ -18,14 +18,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runtime", "Runtime", "{BDA9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Simulator", "Simulator", "{F3405D9A-9228-4579-97B7-6BFB11D2D582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.OpenSilver", "Simulator\Simulator\Simulator.OpenSilver.csproj", "{BAB1B2F6-0152-4194-95A1-7D472D10B2E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulator.OpenSilver", "Simulator\Simulator\Simulator.OpenSilver.csproj", "{BAB1B2F6-0152-4194-95A1-7D472D10B2E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Targets", "Targets", "{AA67D4B5-3E71-4A76-8FC6-49ED51F0D599}"
 	ProjectSection(SolutionItems) = preProject
-		Targets\OpenSilver.Common.targets = Targets\OpenSilver.Common.targets
+		Targets\OpenSilver.Compiler.targets = Targets\OpenSilver.Compiler.targets
 		Targets\OpenSilver.Simulator.targets = Targets\OpenSilver.Simulator.targets
-		Targets\OpenSilver.targets = Targets\OpenSilver.targets
-		Targets\OpenSilver.UwpCompatible.targets = Targets\OpenSilver.UwpCompatible.targets
+		Targets\OpenSilver.Runtime.Core.UwpCompatible.targets = Targets\OpenSilver.Runtime.Core.UwpCompatible.targets
+		Targets\OpenSilver.Runtime.Core.targets = Targets\OpenSilver.Runtime.Core.targets
+		Targets\OpenSilver.WebAssembly.targets = Targets\OpenSilver.WebAssembly.targets
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataForm.Toolkit.OpenSilver", "Runtime\DataForm.Toolkit\DataForm.Toolkit.OpenSilver.csproj", "{2D8E03A2-A9E2-4CD7-81A4-A268D0E28BD8}"
@@ -88,6 +89,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controls.Layout.Toolkit.Ope
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSilver.JSInterop", "Runtime\JSInterop\OpenSilver.JSInterop.csproj", "{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.ResourcesExtractor.OpenSilver", "Compiler\Compiler.ResourcesExtractor\Compiler.ResourcesExtractor.OpenSilver.csproj", "{C761FFA4-0CFF-423B-90F6-3628C3D9CCF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebAssembly", "WebAssembly", "{494C3BC3-7F87-4524-8813-01516AF127AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSilver.Wasm", "WebAssembly\OpenSilver.Wasm\OpenSilver.Wasm.csproj", "{E6F8D96E-7EF5-4039-A8AC-17DF097664BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		SL|Any CPU = SL|Any CPU
@@ -98,10 +105,10 @@ Global
 		{945935AC-0649-4054-A3E3-9671441A3343}.SL|Any CPU.Build.0 = SL|Any CPU
 		{945935AC-0649-4054-A3E3-9671441A3343}.UWP|Any CPU.ActiveCfg = UWP|Any CPU
 		{945935AC-0649-4054-A3E3-9671441A3343}.UWP|Any CPU.Build.0 = UWP|Any CPU
-		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.SL|Any CPU.ActiveCfg = SL|Any CPU
-		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.SL|Any CPU.Build.0 = SL|Any CPU
-		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.UWP|Any CPU.ActiveCfg = UWP|Any CPU
-		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.UWP|Any CPU.Build.0 = UWP|Any CPU
+		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.SL|Any CPU.ActiveCfg = Release|Any CPU
+		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.SL|Any CPU.Build.0 = Release|Any CPU
+		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.UWP|Any CPU.ActiveCfg = Release|Any CPU
+		{B8EBBAB8-D2A2-4B65-A196-245F5BA573D0}.UWP|Any CPU.Build.0 = Release|Any CPU
 		{4ECAD5CD-91DF-48F6-9E9F-AE0A6E7622A8}.SL|Any CPU.ActiveCfg = Release|Any CPU
 		{4ECAD5CD-91DF-48F6-9E9F-AE0A6E7622A8}.SL|Any CPU.Build.0 = Release|Any CPU
 		{4ECAD5CD-91DF-48F6-9E9F-AE0A6E7622A8}.UWP|Any CPU.ActiveCfg = Release|Any CPU
@@ -184,6 +191,14 @@ Global
 		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}.SL|Any CPU.Build.0 = Release|Any CPU
 		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}.UWP|Any CPU.ActiveCfg = Release|Any CPU
 		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}.UWP|Any CPU.Build.0 = Release|Any CPU
+		{C761FFA4-0CFF-423B-90F6-3628C3D9CCF2}.SL|Any CPU.ActiveCfg = Release|Any CPU
+		{C761FFA4-0CFF-423B-90F6-3628C3D9CCF2}.SL|Any CPU.Build.0 = Release|Any CPU
+		{C761FFA4-0CFF-423B-90F6-3628C3D9CCF2}.UWP|Any CPU.ActiveCfg = Release|Any CPU
+		{C761FFA4-0CFF-423B-90F6-3628C3D9CCF2}.UWP|Any CPU.Build.0 = Release|Any CPU
+		{E6F8D96E-7EF5-4039-A8AC-17DF097664BE}.SL|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F8D96E-7EF5-4039-A8AC-17DF097664BE}.SL|Any CPU.Build.0 = Release|Any CPU
+		{E6F8D96E-7EF5-4039-A8AC-17DF097664BE}.UWP|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F8D96E-7EF5-4039-A8AC-17DF097664BE}.UWP|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -217,6 +232,8 @@ Global
 		{C4F12E9C-2D44-4C88-9D4E-4B8DBBC87F69} = {BDA9A1B3-15CD-4068-9A6D-BDA030FBEC5E}
 		{946906B2-590F-4E57-BA27-62AFDE5E1B0B} = {BDA9A1B3-15CD-4068-9A6D-BDA030FBEC5E}
 		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA} = {BDA9A1B3-15CD-4068-9A6D-BDA030FBEC5E}
+		{C761FFA4-0CFF-423B-90F6-3628C3D9CCF2} = {EE82C82C-611F-4CD8-8786-2E1C91EC243E}
+		{E6F8D96E-7EF5-4039-A8AC-17DF097664BE} = {494C3BC3-7F87-4524-8813-01516AF127AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A13C12CC-0544-49D7-A852-FCE1C884AA54}

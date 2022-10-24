@@ -1,0 +1,11 @@
+{
+  "solution": {
+    "path": "..\\..\\src\\OpenSilver.sln",
+    "projects": [
+      "Analyzers\\NotImplemented\\NotImplemented.Analyzer.csproj",
+      "Runtime\\JSInterop\\OpenSilver.JSInterop.csproj",
+      "Runtime\\OpenSilver.Xaml\\OpenSilver.Xaml.csproj",
+      "Runtime\\Runtime\\Runtime.OpenSilver.csproj"
+    ]
+  }
+}

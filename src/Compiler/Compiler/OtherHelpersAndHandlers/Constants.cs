@@ -1,5 +1,4 @@
 ﻿
-
 /*===================================================================================
 * 
 *   Copyright (c) Userware (OpenSilver.net, CSHTML5.com)
@@ -13,27 +12,15 @@
 *  
 \*====================================================================================*/
 
-
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace DotNetForHtml5.Compiler
 {
     internal static class Constants
     {
-        public const string LOWERCASE_CORE_ASSEMBLY_NAME = "csharpxamlforhtml5";
-        public const string LOWERCASE_SYSTEM_ASSEMBLY_NAME = "csharpxamlforhtml5.system";
-
         public const string NAME_OF_CORE_ASSEMBLY = "CSharpXamlForHtml5";
         public const string NAME_OF_CORE_ASSEMBLY_USING_BRIDGE = "CSHTML5";
         public const string NAME_OF_CORE_ASSEMBLY_USING_BLAZOR = "OpenSilver";
         public const string NAME_OF_CORE_ASSEMBLY_SLMIGRATION = "SLMigration.CSharpXamlForHtml5";
         public const string NAME_OF_CORE_ASSEMBLY_SLMIGRATION_USING_BRIDGE = "CSHTML5.Migration";
-        public const string NAME_OF_CORE_ASSEMBLY_SLMIGRATION_USING_BLAZOR = "OpenSilver";
         public const string OPENSILVER_XAML_ASSEMBLY_NAME = "OpenSilver.Xaml";
         public const string OPENSILVER_JSINTEROP_ASSEMBLY_NAME = "OpenSilver.JSInterop";
 

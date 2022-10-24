@@ -27,11 +27,17 @@ namespace DotNetForHtml5.Compiler
     {
         //todo: support strings that contain commas, like in: {Binding Value, ConverterParameter = 'One, two, three, four, five, six', Mode = OneWay}
 
-        internal static void InsertMarkupNodes(XDocument doc, ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain)
+        internal static void InsertMarkupNodes(XDocument doc,
+            ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain,
+            ConversionSettings settings)
         {
-            TraverseNextElement(doc.Root, doc.Root.GetDefaultNamespace(), reflectionOnSeparateAppDomain);
+            TraverseNextElement(doc.Root, doc.Root.GetDefaultNamespace(), reflectionOnSeparateAppDomain, settings);
         }
-        static void TraverseNextElement(XElement currentElement, XNamespace lastDefaultNamespace, ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain)
+
+        private static void TraverseNextElement(XElement currentElement,
+            XNamespace lastDefaultNamespace,
+            ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain,
+            ConversionSettings settings)
         {
             XNamespace currentDefaultNamespace = currentElement.GetDefaultNamespace();
             if (currentDefaultNamespace == XNamespace.None)
@@ -76,11 +82,23 @@ namespace DotNetForHtml5.Compiler
                         }
                         if (currentElementNamespaceName == currentAttributeNamespaceName && currentElementTypeName == currentAttributeTypeName) // currentAttribute is a property defined in the type of currentElement (or one of his parents)
                         {
-                            currentElement.AddFirst(GenerateNodeForAttribute(currentElement.Name + ("." + currentAttributeName), currentAttributeValueEscaped, currentDefaultNamespace, reflectionOnSeparateAppDomain, currentElement.GetNamespaceOfPrefix));
+                            currentElement.AddFirst(GenerateNodeForAttribute(
+                                currentElement.Name + ("." + currentAttributeName),
+                                currentAttributeValueEscaped,
+                                currentDefaultNamespace,
+                                reflectionOnSeparateAppDomain,
+                                currentElement.GetNamespaceOfPrefix,
+                                settings));
                         }
                         else // currentAttribute is an attached property
                         {
-                            currentElement.AddFirst(GenerateNodeForAttribute("{" + currentAttributeNamespaceName + "}" + currentAttributeTypeName + "." + currentAttributeName, currentAttributeValueEscaped, currentDefaultNamespace, reflectionOnSeparateAppDomain, currentElement.GetNamespaceOfPrefix));
+                            currentElement.AddFirst(GenerateNodeForAttribute(
+                                "{" + currentAttributeNamespaceName + "}" + currentAttributeTypeName + "." + currentAttributeName,
+                                currentAttributeValueEscaped,
+                                currentDefaultNamespace,
+                                reflectionOnSeparateAppDomain,
+                                currentElement.GetNamespaceOfPrefix,
+                                settings));
                         }
                         currentAttribute.Remove();
                     }
@@ -90,7 +108,7 @@ namespace DotNetForHtml5.Compiler
             // Recursion:
             foreach (var childElements in currentElement.Elements())
             {
-                TraverseNextElement(childElements, currentDefaultNamespace, reflectionOnSeparateAppDomain);
+                TraverseNextElement(childElements, currentDefaultNamespace, reflectionOnSeparateAppDomain, settings);
             }
         }
 
@@ -167,7 +185,13 @@ namespace DotNetForHtml5.Compiler
         /// <param name="attributeValue">a string containing the whole attribute's definition (for example: "{Binding Toto, Mode = TwoWay, Converter = {StaticResource Myconverter}}")</param>
         /// <param name="reflectionOnSeparateAppDomain"></param>
         /// <returns></returns>
-        private static XElement GenerateNodeForAttribute(XName nodeName, string attributeValue, XNamespace lastDefaultNamespace, ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain, Func<string, XNamespace> getNamespaceOfPrefix)
+        private static XElement GenerateNodeForAttribute(
+            XName nodeName,
+            string attributeValue,
+            XNamespace lastDefaultNamespace,
+            ReflectionOnSeparateAppDomainHandler reflectionOnSeparateAppDomain,
+            Func<string, XNamespace> getNamespaceOfPrefix,
+            ConversionSettings settings)
         {
             //we get rid of the part that defines the type of the attribute (in the example: we get rid of "{Binding ")
             //if (attributeValue.StartsWith("{"))
@@ -241,7 +265,13 @@ namespace DotNetForHtml5.Compiler
                         }
 
                         // Generate the elements:
-                        XElement subXElement = GenerateNodeForAttribute(ns + localName, currentSubAttributeWithoutUselessPart, lastDefaultNamespace, reflectionOnSeparateAppDomain, getNamespaceOfPrefix);
+                        XElement subXElement = GenerateNodeForAttribute(
+                            ns + localName,
+                            currentSubAttributeWithoutUselessPart,
+                            lastDefaultNamespace,
+                            reflectionOnSeparateAppDomain,
+                            getNamespaceOfPrefix,
+                            settings);
                         XElement subXElement1 = subXElement;
                         if (!nodeName.LocalName.Contains('.'))
                         {
@@ -263,8 +293,12 @@ namespace DotNetForHtml5.Compiler
                     string keyStringAfterPlaceHolderReplacement = keyString;
                     if (keyString == "_placeHolderForDefaultValue") //this test is to replace the name of the attribute (which is in keyString) if it was a placeholder
                     {
-                        string namespaceName, localName, assemblyNameIfAny;
-                        GettingInformationAboutXamlTypes.GetClrNamespaceAndLocalName(nodeName, out namespaceName, out localName, out assemblyNameIfAny);
+                        GettingInformationAboutXamlTypes.GetClrNamespaceAndLocalName(
+                            nodeName,
+                            settings.EnableImplicitAssemblyRedirection,
+                            out string namespaceName,
+                            out string localName,
+                            out string assemblyNameIfAny);
                         keyStringAfterPlaceHolderReplacement = reflectionOnSeparateAppDomain.GetContentPropertyName(namespaceName, localName, assemblyNameIfAny);
                     }
                     else if (keyStringAfterPlaceHolderReplacement.StartsWith("{")) //if we enter this if, it means that keyString is of the form "{Binding ElementName" so we want to remove "{Binding "
@@ -498,147 +532,5 @@ namespace DotNetForHtml5.Compiler
                 return value.Replace(",", "<COMMA>");
             });
         }
-
-#if no
-        private struct MarkupExtensionDescriptor
-        {
-            public string Prefix { get; private set; }
-
-            public string TypeName { get; private set; }
-
-            public MarkupExtensionParameterDescriptor[] Args { get; private set; }
-
-            public static MarkupExtensionDescriptor Parse(string markupExtensionAsString)
-            {
-                MarkupExtensionDescriptor markup = new MarkupExtensionDescriptor();
-                string s = markupExtensionAsString.Trim().Substring(1, markupExtensionAsString.Length - 2).Trim(); //Remove whitespace and surrounding brackets.
-                string[] split;
-                int indexOfWhiteSpace = s.IndexOf(' ');
-                if (indexOfWhiteSpace < 0)
-                {
-                    split = new string[2] { s, string.Empty };
-                }
-                else
-                {
-                    split = new string[2] { s.Substring(0, indexOfWhiteSpace), s.Substring(indexOfWhiteSpace + 1) };
-                }
-
-                // Get Type and Namespace.
-                string[] fullNameSplit = split[0].Split(':');
-                if (fullNameSplit.Length == 1)
-                {
-                    markup.Prefix = string.Empty;
-                    markup.TypeName = fullNameSplit[0];
-                }
-                else
-                {
-                    markup.Prefix = fullNameSplit[0];
-                    markup.TypeName = fullNameSplit[1];
-                }
-
-                //Get Arguments
-                markup.Args = ParseArgs(split[1]);
-                return markup;
-            }
-
-            private static MarkupExtensionParameterDescriptor[] ParseArgs(string argsAsString)
-            {
-                string s = argsAsString.Trim();
-                List<string> args = new List<string>();
-                string currentArg = string.Empty;
-                char currentChar;
-                bool ignoreComma = false;
-                bool skipWhiteSpace = true;
-                bool isQuoting = false;
-                int openedBracketCount = 0;
-                for (int i = 0; i < s.Length; ++i)
-                {
-                    if ((currentChar = s[i]) == '{' && !isQuoting)
-                    {
-                        ++openedBracketCount;
-                        currentArg += '{';
-                        ignoreComma = true;
-                        skipWhiteSpace = true;
-                    }
-                    else if (currentChar == '}' && !isQuoting)
-                    {
-                        if (--openedBracketCount == 0)
-                        {
-                            ignoreComma = false;
-                        }
-                        currentArg += '}';
-                        skipWhiteSpace = true;
-                    }
-                    else if (currentChar == '\'')
-                    {
-                        skipWhiteSpace = isQuoting;
-                        ignoreComma = (isQuoting = !isQuoting);
-                        currentArg += "'";
-                    }
-                    else if (currentChar == ',' && !ignoreComma)
-                    {
-                        args.Add(currentArg);
-                        currentArg = string.Empty;
-                        skipWhiteSpace = true;
-                    }
-                    else if (!char.IsWhiteSpace(currentChar) || !skipWhiteSpace)
-                    {
-                        currentArg += currentChar;
-                        skipWhiteSpace = false;
-                    }
-                }
-                if (isQuoting)
-                {
-                    throw new ArgumentException(string.Format("Unable to convert '{0}' to MarkupExtensionParameterDescriptor", argsAsString));
-                }
-                if (!string.IsNullOrWhiteSpace(currentArg))
-                {
-                    args.Add(currentArg);
-                }
-                MarkupExtensionParameterDescriptor[] res = new MarkupExtensionParameterDescriptor[args.Count];
-                for (int i = 0; i < args.Count; ++i)
-                {
-                    res[i] = MarkupExtensionParameterDescriptor.Parse(args[i]);
-                }
-                return res;
-            }
-
-            public override string ToString()
-            {
-                string s = string.IsNullOrWhiteSpace(this.Prefix) ? this.TypeName : string.Format("{0}:{1}", this.Prefix, this.TypeName);
-                return s;
-            }
-        }
-
-        private struct MarkupExtensionParameterDescriptor
-        {
-            public string PropertyName { get; private set; }
-            public string Value { get; private set; }
-
-            public static MarkupExtensionParameterDescriptor Parse(string argsAsString)
-            {
-                MarkupExtensionParameterDescriptor arg = new MarkupExtensionParameterDescriptor();
-                int indexOfEqual = argsAsString.IndexOf('=');
-                if (indexOfEqual < 0)
-                {
-                    // Content Property
-                    arg.PropertyName = string.Empty;
-                    arg.Value = argsAsString.Trim();
-                }
-                else
-                {
-                    arg.PropertyName = argsAsString.Substring(0, indexOfEqual).Trim();
-                    arg.Value = argsAsString.Substring(indexOfEqual + 1).Trim();
-                }
-                return arg;
-            }
-
-            public override string ToString()
-            {
-                string value = this.Value.Contains(",") ? "'" + this.Value + "'" : this.Value;
-                return string.Format("{0} = {1}", this.PropertyName, value);
-            }
-        }
-#endif
     }
 }
