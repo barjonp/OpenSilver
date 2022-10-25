@@ -83,6 +83,7 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript
         ChromiumDevTools _devTools;
         bool _pendingRefreshOfHighlight = false;
         Assembly _coreAssembly;
+        Assembly _jsInteropAssembly;
         Assembly _typeForwardingAssembly;
         string _browserUserDataDir;
 
@@ -136,6 +137,7 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript
             _appCreationDelegate = appCreationDelegate ?? throw new ArgumentNullException(nameof(appCreationDelegate));
             _simulatorLaunchParameters = simulatorLaunchParameters;
             ReflectionInUserAssembliesHelper.TryGetCoreAssembly(out _coreAssembly);
+            ReflectionInUserAssembliesHelper.TryGetJSInteropAssembly(out _jsInteropAssembly);
             _entryPointAssembly = appAssembly;
             _pathOfAssemblyThatContainsEntryPoint = _entryPointAssembly.Location;
 #endif
@@ -1020,20 +1022,20 @@ Click OK to continue.";
                 // Create the HTML DOM MANAGER proxy and pass it to the "Core" project:
                 JSValue htmlDocument = (JSObject)MainWebBrowser.Browser.ExecuteJavaScriptAndReturnValue("document");
 
-                InteropHelpers.InjectDOMDocument(MainWebBrowser.Browser.GetDocument(), _coreAssembly);
-                InteropHelpers.InjectHtmlDocument(htmlDocument, _coreAssembly);//no need for this line right ?
-                InteropHelpers.InjectWebControlDispatcherBeginInvoke(MainWebBrowser, _coreAssembly);
-                InteropHelpers.InjectWebControlDispatcherInvoke(MainWebBrowser, _coreAssembly);
-                InteropHelpers.InjectWebControlDispatcherCheckAccess(MainWebBrowser, _coreAssembly);
-                InteropHelpers.InjectConvertBrowserResult(BrowserResultConverter.CastFromJsValue, _coreAssembly);
-                InteropHelpers.InjectJavaScriptExecutionHandler(_javaScriptExecutionHandler, _coreAssembly);
-                InteropHelpers.InjectWpfMediaElementFactory(_coreAssembly);
-                InteropHelpers.InjectWebClientFactory(_coreAssembly);
-                InteropHelpers.InjectClipboardHandler(_coreAssembly);
-                InteropHelpers.InjectSimulatorProxy(new SimulatorProxy(MainWebBrowser, Console), _coreAssembly);
+                InteropHelpers.InjectDOMDocument(MainWebBrowser.Browser.GetDocument(), _jsInteropAssembly);
+                InteropHelpers.InjectHtmlDocument(htmlDocument, _jsInteropAssembly);//no need for this line right ?
+                InteropHelpers.InjectWebControlDispatcherBeginInvoke(MainWebBrowser, _jsInteropAssembly);
+                InteropHelpers.InjectWebControlDispatcherInvoke(MainWebBrowser, _jsInteropAssembly);
+                InteropHelpers.InjectWebControlDispatcherCheckAccess(MainWebBrowser, _jsInteropAssembly);
+                InteropHelpers.InjectConvertBrowserResult(BrowserResultConverter.CastFromJsValue, _jsInteropAssembly);
+                InteropHelpers.InjectJavaScriptExecutionHandler(_javaScriptExecutionHandler, _jsInteropAssembly);
+                InteropHelpers.InjectWpfMediaElementFactory(_jsInteropAssembly);
+                InteropHelpers.InjectWebClientFactory(_jsInteropAssembly);
+                InteropHelpers.InjectClipboardHandler(_jsInteropAssembly);
+                InteropHelpers.InjectSimulatorProxy(new SimulatorProxy(MainWebBrowser, Console), _jsInteropAssembly);
 
                 // In the OpenSilver Version, we use this work-around to know if we're in the simulator
-                InteropHelpers.InjectIsRunningInTheSimulator_WorkAround(_coreAssembly);
+                InteropHelpers.InjectIsRunningInTheSimulator_WorkAround(_jsInteropAssembly);
 
                 WpfMediaElementFactory._gridWhereToPlaceMediaElements = GridForAudioMediaElements;
 

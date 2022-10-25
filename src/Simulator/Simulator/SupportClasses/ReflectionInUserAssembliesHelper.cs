@@ -28,6 +28,7 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript
     static class ReflectionInUserAssembliesHelper
     {
         static Assembly _coreAssembly;
+        static Assembly _jsInteropAssembly;
         static Dictionary<string, Type> _typesCacheForPerformance = new Dictionary<string, Type>();
 
         internal static bool TryDetermineTypeThatInheritsFromApplication(Assembly entryPointAssembly, out Type typeThatInheritsFromApplication, out Assembly coreAssembly)
@@ -172,6 +173,33 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript
                 else
                 {
                     MessageBox.Show("Could not find the core assembly among the loaded assemblies.");
+                    return false;
+                }
+            }
+        }
+
+        internal static bool TryGetJSInteropAssembly(out Assembly jsInteropAssembly)
+        {
+            // Read from cache if previously found:
+            if (_jsInteropAssembly != null)
+            {
+                jsInteropAssembly = _jsInteropAssembly;
+                return true;
+            }
+            else
+            {
+                jsInteropAssembly =
+                    (from a in AppDomain.CurrentDomain.GetAssemblies()
+                     where string.Equals(a.GetName().Name, Constants.OPENSILVER_JSINTEROP_ASSEMBLY_NAME, StringComparison.CurrentCultureIgnoreCase)
+                     select a).FirstOrDefault();
+                if (jsInteropAssembly != null)
+                {
+                    _jsInteropAssembly = jsInteropAssembly;
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("Could not find the js interop assembly among the loaded assemblies.");
                     return false;
                 }
             }

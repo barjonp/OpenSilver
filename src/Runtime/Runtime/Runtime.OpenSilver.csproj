@@ -35,18 +35,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="Microsoft.JSInterop" Version="3.1.28" />
 		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
 	</ItemGroup>
   
 	<ItemGroup>
-		<ProjectReference Include="..\OpenSilver.Xaml\OpenSilver.Xaml.csproj" />
+    <ProjectReference Include="..\OpenSilver.Xaml\OpenSilver.Xaml.csproj" />
+    <ProjectReference Include="..\JSInterop\OpenSilver.JSInterop.csproj" />
 	</ItemGroup>
   
 	<ItemGroup>
-		<Compile Include="APP_SUPPORT\JavaScriptExecutionHandler.cs" />
 		<Compile Include="Core\Events\DOMEventManager.cs" />
 		<Compile Include="Core\Main\CopyOnWriteList.cs" />
 		<Compile Include="Core\Main\DescendentsWalker.cs" />
@@ -575,8 +573,6 @@
 		<Compile Include="System.Windows.Shapes\Polyline.cs" />
 		<Compile Include="System.Windows.Threading\WORKINPROGRESS\DispatcherSynchronizationContext.cs" />
 		<Compile Include="APP_SUPPORT\ClientSideResourceManager.cs" />
-		<Compile Include="APP_SUPPORT\Cshtml5Initializer.cs" />
-		<Compile Include="APP_SUPPORT\StaticConstructorsCaller.cs" />
 		<Compile Include="Core\Events\HtmlEventProxy.cs" />
 		<Compile Include="Core\Events\INTERNAL_EventManager.cs" />
 		<Compile Include="Core\Events\INTERNAL_EventsHelper.cs" />
@@ -584,7 +580,6 @@
 		<Compile Include="Core\Main\INTERNAL_ListsHelper.cs" />
 		<Compile Include="Core\Main\INTERNAL_PropertyStorage.cs" />
 		<Compile Include="Core\Main\INTERNAL_PropertyStore.cs" />
-		<Compile Include="Core\Main\INTERNAL_Simulator.cs" />
 		<Compile Include="Core\Main\INTERNAL_SimulatorExecuteJavaScript.cs" />
 		<Compile Include="Core\Main\INTERNAL_TypeToDependencyPropertiesThatRequirePropertyChanged.cs" />
 		<Compile Include="Core\Main\INTERNAL_TypeToStringToDependencyProperty.cs" />
@@ -1148,7 +1143,6 @@
 		<Compile Include="__COMPATIBILITY__\JSIL.Meta.dll ASSEMBLY\JSIL.Meta\JSIgnoreAttribute.cs" />
 		<Compile Include="__COMPATIBILITY__\JSIL.Meta.dll ASSEMBLY\JSIL.Meta\JSReplacementAttribute.cs" />
 		<Compile Include="__COMPATIBILITY__\JSIL.Meta.dll ASSEMBLY\JSIL\Verbatim.cs" />
-		<Compile Include="__SPECIFIC__\IJavaScriptExecutionHandler.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="..\Themes\Runtime\OpenSilver\generic.xaml" Link="Themes\generic.xaml">

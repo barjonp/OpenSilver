@@ -1,5 +1,4 @@
 
-
 /*===================================================================================
 * 
 *   Copyright (c) Userware/OpenSilver.net
@@ -11,10 +10,6 @@
 *   notice shall be included in all copies or substantial portions of the Software."
 *  
 \*====================================================================================*/
-
-
-
-#if CSHTML5NETSTANDARD
 
 using System;
 
@@ -51,5 +46,3 @@ namespace DotNetForHtml5
             => throw new NotSupportedException();
     }
 }
-
-#endif

@@ -27,6 +27,9 @@
   </metadata>
   <files>
     <!-- OpenSilver runtime -->
+    <file src="../../src/Runtime/JSInterop/bin/Release/netstandard2.0/OpenSilver.JSInterop.dll" target="lib/netstandard2.0" />
+    <file src="../../src/Runtime/JSInterop/bin/Release/netstandard2.0/OpenSilver.JSInterop.pdb" target="lib/netstandard2.0" />
+    <file src="../../src/Runtime/JSInterop/bin/Release/netstandard2.0/OpenSilver.JSInterop.xml" target="lib/netstandard2.0" />
     <file src="../../src/Runtime/OpenSilver.Xaml/bin/OpenSilver/Debug/netstandard2.0/OpenSilver.Xaml.dll" target="lib/netstandard2.0/OpenSilver.Xaml.dll" />
     <file src="../../src/Runtime/OpenSilver.Xaml/bin/OpenSilver/Debug/netstandard2.0/OpenSilver.Xaml.pdb" target="lib/netstandard2.0/OpenSilver.Xaml.pdb" />
     <file src="../../src/Runtime/OpenSilver.Xaml/bin/OpenSilver/Debug/netstandard2.0/OpenSilver.Xaml.xml" target="lib/netstandard2.0/OpenSilver.Xaml.xml" />

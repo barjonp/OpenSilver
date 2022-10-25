@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32002.261
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runtime.OpenSilver", "Runtime\Runtime\Runtime.OpenSilver.csproj", "{945935AC-0649-4054-A3E3-9671441A3343}"
 EndProject
@@ -85,6 +85,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controls.Data.OpenSilver", "Runtime\Controls.Data\Controls.Data.OpenSilver.csproj", "{C4F12E9C-2D44-4C88-9D4E-4B8DBBC87F69}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controls.Layout.Toolkit.OpenSilver", "Runtime\Controls.Layout.Toolkit\Controls.Layout.Toolkit.OpenSilver.csproj", "{946906B2-590F-4E57-BA27-62AFDE5E1B0B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSilver.JSInterop", "Runtime\JSInterop\OpenSilver.JSInterop.csproj", "{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -178,6 +180,10 @@ Global
 		{946906B2-590F-4E57-BA27-62AFDE5E1B0B}.SL|Any CPU.Build.0 = SL|Any CPU
 		{946906B2-590F-4E57-BA27-62AFDE5E1B0B}.UWP|Any CPU.ActiveCfg = UWP|Any CPU
 		{946906B2-590F-4E57-BA27-62AFDE5E1B0B}.UWP|Any CPU.Build.0 = UWP|Any CPU
+		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}.SL|Any CPU.ActiveCfg = Release|Any CPU
+		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}.SL|Any CPU.Build.0 = Release|Any CPU
+		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}.UWP|Any CPU.ActiveCfg = Release|Any CPU
+		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA}.UWP|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -210,6 +216,7 @@ Global
 		{9F7D6B89-8C80-48A4-AB45-103828504796} = {BDA9A1B3-15CD-4068-9A6D-BDA030FBEC5E}
 		{C4F12E9C-2D44-4C88-9D4E-4B8DBBC87F69} = {BDA9A1B3-15CD-4068-9A6D-BDA030FBEC5E}
 		{946906B2-590F-4E57-BA27-62AFDE5E1B0B} = {BDA9A1B3-15CD-4068-9A6D-BDA030FBEC5E}
+		{E976AF47-AC12-4B6B-9A2E-6AF1438F6ABA} = {BDA9A1B3-15CD-4068-9A6D-BDA030FBEC5E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A13C12CC-0544-49D7-A852-FCE1C884AA54}

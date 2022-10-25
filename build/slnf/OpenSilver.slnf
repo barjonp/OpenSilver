@@ -16,6 +16,7 @@
 	  "Runtime\\Controls.Data\\Controls.Data.OpenSilver.csproj",
 	  "Runtime\\Controls.Layout.Toolkit\\Controls.Layout.Toolkit.OpenSilver.csproj",
       "Runtime\\Runtime\\Runtime.OpenSilver.csproj",
+      "Runtime\\JSInterop\\OpenSilver.JSInterop.csproj",
 	  "Runtime\\Blend\\Interactivity\\Interactivity.OpenSilver.csproj",
 	  "Runtime\\Blend\\Interactions\\Expression.Interactions.OpenSilver.csproj",
 	  "Runtime\\Blend\\Effects\\Expression.Effects.OpenSilver.csproj"

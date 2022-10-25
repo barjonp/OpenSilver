@@ -27,69 +27,69 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript
     static class InteropHelpers
     {
 #if OPENSILVER
-        internal static void InjectIsRunningInTheSimulator_WorkAround(Assembly coreAssembly)
+        internal static void InjectIsRunningInTheSimulator_WorkAround(Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("IsRunningInTheSimulator_WorkAround", true, coreAssembly);
+            InjectPropertyValue("IsRunningInTheSimulator_WorkAround", true, jsInteropAssembly);
         }
 #endif
 
-        internal static void InjectDOMDocument(DOMDocument document, Assembly coreAssembly)
+        internal static void InjectDOMDocument(DOMDocument document, Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("DOMDocument", document, coreAssembly);
+            InjectPropertyValue("DOMDocument", document, jsInteropAssembly);
         }
 
-        internal static void InjectHtmlDocument(JSValue htmlDocument, Assembly coreAssembly)
+        internal static void InjectHtmlDocument(JSValue htmlDocument, Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("HtmlDocument", htmlDocument, coreAssembly);
+            InjectPropertyValue("HtmlDocument", htmlDocument, jsInteropAssembly);
         }
 
-        internal static void InjectWebControlDispatcherBeginInvoke(WPFBrowserView webControl, Assembly coreAssembly)
+        internal static void InjectWebControlDispatcherBeginInvoke(WPFBrowserView webControl, Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("WebControlDispatcherBeginInvoke", new Action<Action>((method) => webControl.Dispatcher.BeginInvoke(method)), coreAssembly);
+            InjectPropertyValue("WebControlDispatcherBeginInvoke", new Action<Action>((method) => webControl.Dispatcher.BeginInvoke(method)), jsInteropAssembly);
         }
 
-        internal static void InjectWebControlDispatcherInvoke(WPFBrowserView webControl, Assembly coreAssembly)
+        internal static void InjectWebControlDispatcherInvoke(WPFBrowserView webControl, Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("WebControlDispatcherInvoke", new Action<Action, TimeSpan>((method, timeout) => webControl.Dispatcher.Invoke(method, timeout)), coreAssembly);
+            InjectPropertyValue("WebControlDispatcherInvoke", new Action<Action, TimeSpan>((method, timeout) => webControl.Dispatcher.Invoke(method, timeout)), jsInteropAssembly);
         }
 
-        internal static void InjectWebControlDispatcherCheckAccess(WPFBrowserView webControl, Assembly coreAssembly)
+        internal static void InjectWebControlDispatcherCheckAccess(WPFBrowserView webControl, Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("WebControlDispatcherCheckAccess", new Func<bool>(() => webControl.Dispatcher.CheckAccess()), coreAssembly);
+            InjectPropertyValue("WebControlDispatcherCheckAccess", new Func<bool>(() => webControl.Dispatcher.CheckAccess()), jsInteropAssembly);
         }
 
-        internal static void InjectConvertBrowserResult(Func<object, object> func, Assembly coreAssembly)
+        internal static void InjectConvertBrowserResult(Func<object, object> func, Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("ConvertBrowserResult", func, coreAssembly);
+            InjectPropertyValue("ConvertBrowserResult", func, jsInteropAssembly);
         }
 
-        internal static void InjectJavaScriptExecutionHandler(dynamic javaScriptExecutionHandler, Assembly coreAssembly)
+        internal static void InjectJavaScriptExecutionHandler(dynamic javaScriptExecutionHandler, Assembly jsInteropAssembly)
         {
 #if OPENSILVER
-            InjectPropertyValue("DynamicJavaScriptExecutionHandler", javaScriptExecutionHandler, coreAssembly);
+            InjectPropertyValue("DynamicJavaScriptExecutionHandler", javaScriptExecutionHandler, jsInteropAssembly);
 #else
             InjectPropertyValue("JavaScriptExecutionHandler", javaScriptExecutionHandler, coreAssembly);
 #endif
         }
 
-        internal static void InjectWpfMediaElementFactory(Assembly coreAssembly)
+        internal static void InjectWpfMediaElementFactory(Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("WpfMediaElementFactory", new WpfMediaElementFactory(), coreAssembly);
+            InjectPropertyValue("WpfMediaElementFactory", new WpfMediaElementFactory(), jsInteropAssembly);
         }
 
-        internal static void InjectWebClientFactory(Assembly coreAssembly)
+        internal static void InjectWebClientFactory(Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("WebClientFactory", new WebClientFactory(), coreAssembly);
+            InjectPropertyValue("WebClientFactory", new WebClientFactory(), jsInteropAssembly);
         }
 
-        internal static void InjectClipboardHandler(Assembly coreAssembly)
+        internal static void InjectClipboardHandler(Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("ClipboardHandler", new ClipboardHandler(), coreAssembly);
+            InjectPropertyValue("ClipboardHandler", new ClipboardHandler(), jsInteropAssembly);
         }
 
-        internal static void InjectSimulatorProxy(SimulatorProxy simulatorProxy, Assembly coreAssembly)
+        internal static void InjectSimulatorProxy(SimulatorProxy simulatorProxy, Assembly jsInteropAssembly)
         {
-            InjectPropertyValue("SimulatorProxy", simulatorProxy, coreAssembly);
+            InjectPropertyValue("SimulatorProxy", simulatorProxy, jsInteropAssembly);
         }
 
         internal static dynamic GetPropertyValue(string propertyName, Assembly coreAssembly)
@@ -115,9 +115,9 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript
             }
         }
 
-        static void InjectPropertyValue(string propertyName, object propertyValue, Assembly coreAssembly)
+        static void InjectPropertyValue(string propertyName, object propertyValue, Assembly jsInteropAssembly)
         {
-            Type typeInCoreAssembly = coreAssembly.GetType("DotNetForHtml5.Core.INTERNAL_Simulator");
+            Type typeInCoreAssembly = jsInteropAssembly.GetType("DotNetForHtml5.Core.INTERNAL_Simulator");
             if (typeInCoreAssembly == null)
             {
                 MessageBox.Show("ERROR: Could not find the type \"INTERNAL_Simulator\" in the core assembly.");
