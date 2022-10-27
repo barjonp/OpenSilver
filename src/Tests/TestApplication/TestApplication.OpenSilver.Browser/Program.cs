@@ -17,7 +17,7 @@ namespace TestApplication.OpenSilver.Browser
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             var host = builder.Build();
-            await host.RunAsync();
+            await host.RunAsync(); 
         }
 
         public static void RunApplication()
