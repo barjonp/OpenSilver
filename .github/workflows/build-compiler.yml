@@ -1,0 +1,41 @@
+name: OpenSilver Compiler Build
+env:
+  next-release-version: '1.2.0'
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'compiler/**'
+jobs:
+  OpenSilver-Build:
+    #We should not run these steps on the forks by default.
+    #if: github.repository_owner == 'OpenSilver'
+    runs-on: windows-latest
+    steps:
+      - uses: microsoft/setup-msbuild@v1.1
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v3.x
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '7.0.100'
+      - name: Clone OpenSilver repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Format Version Suffix
+        id: format-suffix
+        run: echo "::set-output name=suffix::$(date +'%Y-%m-%d-%H%M%S')-${{ env.GITHUB_SHA_SHORT }}"
+      - name: Format Package Version
+        id: format-version
+        run: echo "::set-output name=version::${{ env.next-release-version }}-dev-${{ steps.format-suffix.outputs.suffix }}"
+      - name: Build and Pack Compiler
+        working-directory: build/BatFiles
+        run: |
+          ./Build_Compiler.bat ${{ steps.format-version.outputs.version }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OpenSilver
+          path: "build/output/OpenSilver"
+      - name: Upload packages to MyGet
+        run: |
+           dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.MYGET_DEV_TOKEN }} -s https://www.myget.org/F/opensilver-dev/api/v2/package     

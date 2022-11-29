@@ -1,15 +1,15 @@
 name: OpenSilver Build
 env:
-  next-release-version: '1.2.0'
-  current-release-version: '1.1.0'
+  next-release-version: '1.3.0'
 on:
-  push:
-    branches:
-      - develop
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #    - develop
 jobs:
   OpenSilver-Build:
     #We should not run these steps on the forks by default.
-    if: github.repository_owner == 'OpenSilver'
+    #if: github.repository_owner == 'OpenSilver'
     runs-on: windows-latest
     steps:
       - uses: microsoft/setup-msbuild@v1.1
@@ -17,7 +17,7 @@ jobs:
         uses: rlespinasse/github-slug-action@v3.x
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.203'
+          dotnet-version: '7.0.100'
       - name: Clone OpenSilver repo
         uses: actions/checkout@v2
         with:
@@ -27,40 +27,16 @@ jobs:
         shell: bash
         env:
           TEAMDEV_LICENSE: ${{secrets.TEAMDEV_LICENSE}}
-      - name: Restore Packages
-        run: |
-          ./restore-packages-opensilver.bat
-          nuget restore src/OpenSilver.sln -v quiet
-      - name: Build Compiler
-        run: msbuild src/Compiler/Compiler/Compiler.OpenSilver.csproj -p:Configuration=SL -clp:ErrorsOnly -restore
-      - name: Copy Compiler Assemblies
-        run: cp src/Compiler/Compiler/bin/OpenSilver/SL/net461/OpenSilver.Compiler*dll src/packages/OpenSilver.${{env.current-release-version}}/tools/;
-      - name: Copy Targets
-        run: |
-          cp src/Targets/OpenSilver.targets src/packages/OpenSilver.${{env.current-release-version}}/build/;
-          cp src/Targets/OpenSilver.Common.targets src/packages/OpenSilver.${{env.current-release-version}}/build/;
-      - name: Build OpenSilver
-        working-directory: build
-        run: msbuild slnf/OpenSilver.slnf -p:Configuration=SL -clp:ErrorsOnly -restore
       - name: Format Version Suffix
         id: format-suffix
         run: echo "::set-output name=suffix::$(date +'%Y-%m-%d-%H%M%S')-${{ env.GITHUB_SHA_SHORT }}"
       - name: Format Package Version
         id: format-version
         run: echo "::set-output name=version::${{ env.next-release-version }}-preview-${{ steps.format-suffix.outputs.suffix }}"
-      - name: Build Simulator
-        working-directory: build
-        run: msbuild slnf/OpenSilver.Simulator.slnf -p:Configuration=SL -clp:ErrorsOnly
-      - name: Pack OpenSilver
-        working-directory: build
+      - name: Build and Pack NuGet packages
+        working-directory: build/BatFiles
         run: |
-          mkdir temp; echo "OpenSilver ${{ steps.format-version.outputs.version }}" > temp/Version.txt
-          nuget.exe pack nuspec\OpenSilver.nuspec -OutputDirectory "output/OpenSilver" -Properties "PackageId=OpenSilver;PackageVersion=${{ steps.format-version.outputs.version }};Configuration=SL;Target=OpenSilver;RepositoryUrl=https://github.com/${{ env.GITHUB_REPOSITORY_OWNER_PART }}/${{ env.GITHUB_REPOSITORY_NAME_PART }}"
-      - name: Pack Simulator
-        working-directory: build
-        run: |
-          echo "OpenSilver.Simulator ${{ steps.format-version.outputs.version }}" > temp/Version.txt
-          nuget.exe pack nuspec\OpenSilver.Simulator.nuspec -OutputDirectory "output/OpenSilver"  -BasePath ".\" -Properties "PackageVersion=${{ steps.format-version.outputs.version }};RepositoryUrl=https://github.com/${{ env.GITHUB_REPOSITORY_OWNER_PART }}/${{ env.GITHUB_REPOSITORY_NAME_PART }}"
+          ./SL_Build.bat ${{ steps.format-version.outputs.version }}
       - uses: actions/upload-artifact@v2
         with:
           name: OpenSilver
@@ -70,4 +46,4 @@ jobs:
            dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/${{ env.GITHUB_REPOSITORY_OWNER_PART }}/index.json
       - name: Upload packages to MyGet
         run: |
-           dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s https://www.myget.org/F/opensilver/api/v2/package     
+           dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.MYGET_TEMP_TOKEN }} -s https://www.myget.org/F/opensilver-temp/api/v2/package     
