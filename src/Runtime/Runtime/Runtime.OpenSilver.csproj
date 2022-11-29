@@ -1,9 +1,4 @@
-<Project>
-	<PropertyGroup>
-		<BaseIntermediateOutputPath>obj\OpenSilver</BaseIntermediateOutputPath>
-	</PropertyGroup>
-	<!-- We do this that way because otherwise the <BaseIntermediateOutputPath> directive will not work. This is a bug with .NET Standard 2.0 -->
-	<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
@@ -13,14 +8,15 @@
     <AssemblyVersion>1.1.0</AssemblyVersion>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<OutputPath>bin\OpenSilver\$(Configuration)\</OutputPath>
-		<NoWarn>1591</NoWarn>
+    <IntermediateOutputPath>obj\OpenSilver\$(Configuration)\</IntermediateOutputPath>
+    <NoWarn>1591</NoWarn>
 		<DebugType>full</DebugType>
 		<Optimize>true</Optimize>
 		<NoCSHTML5Reference>true</NoCSHTML5Reference>
 		<EnableDefaultItems>false</EnableDefaultItems>
 		<!-- This emluates the behavior of NET Framework, which excludes every files by default -->
 		<OpenSilverVersion>1.1.0</OpenSilverVersion>
-	</PropertyGroup>
+  </PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SL|AnyCPU' ">
 		<DefineConstants>TRACE;CSHTML5BLAZOR;CSHTML5NETSTANDARD;MIGRATION;OPENSILVER;GD_WIP</DefineConstants>
@@ -35,6 +31,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+    <PackageReference Include="OpenSilver.Compiler" Version="$(_OpenSilverCompilerVersion)" />
 		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
 	</ItemGroup>
@@ -1308,10 +1305,4 @@
 		<None Include="Runtime.licenseheader" />
 	</ItemGroup>
   
-	<!-- See ths comment on the first <Import> -->
-	<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
-	<Import Project="..\..\packages\OpenSilver.$(OpenSilverVersion)\build\OpenSilver.targets" Condition=" '$(Configuration)|$(Platform)' == 'SL|AnyCPU' " />
-	<Import Project="..\..\packages\OpenSilver.UWPCompatible.$(OpenSilverVersion)\build\OpenSilver.UwpCompatible.targets" Condition=" '$(Configuration)|$(Platform)' == 'UWP|AnyCPU' " />
-
 </Project>

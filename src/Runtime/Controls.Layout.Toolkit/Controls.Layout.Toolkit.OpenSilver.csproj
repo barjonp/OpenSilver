@@ -1,6 +1,4 @@
-﻿<Project>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -18,6 +16,10 @@
     <DefineConstants Condition="$(Optimize) != true">$(DefineConstants);DEBUG</DefineConstants>
     <DefineConstants Condition=" '$(Configuration)' == 'SL' ">$(DefineConstants);MIGRATION</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenSilver.Compiler" Version="$(_OpenSilverCompilerVersion)" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Runtime\Runtime.OpenSilver.csproj" />
@@ -79,10 +81,5 @@
     <None Include="Accordion\AccordionButton.xaml" />
     <None Include="TransitioningContentControl\TransitioningContentControl.xaml" />
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
-  <Import Project="..\..\packages\OpenSilver.$(OpenSilverVersion)\build\OpenSilver.targets" Condition=" '$(Configuration)' == 'SL' " />
-  <Import Project="..\..\packages\OpenSilver.UWPCompatible.$(OpenSilverVersion)\build\OpenSilver.UwpCompatible.targets" Condition=" '$(Configuration)' == 'UWP' " />
 
 </Project>

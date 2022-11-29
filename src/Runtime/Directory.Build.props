@@ -1,7 +1,23 @@
 <Project>
+
   <Import Project="..\Directory.Build.props" />
 
   <PropertyGroup>
     <EnableAdditionalMetadataAttributes>true</EnableAdditionalMetadataAttributes>
+    <_OpenSilverCompilerVersion>1.2.0-dev-2022-11-29-162441-de4fd850</_OpenSilverCompilerVersion>
   </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(Configuration)' == 'SL'">
+      <PropertyGroup>
+        <IsSLMigration>True</IsSLMigration>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(Configuration)' == 'UWP'">
+      <PropertyGroup>
+        <IsSLMigration>False</IsSLMigration>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
 </Project>
