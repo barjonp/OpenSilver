@@ -13,136 +13,86 @@
 *  
 \*====================================================================================*/
 
-
-
-using DotNetBrowser;
-using DotNetBrowser.DOM;
 using System;
 using System.Reflection;
 using System.Windows;
+using DotNetBrowser;
+using DotNetForHtml5.Core;
+using DotNetBrowser.DOM;
 using DotNetBrowser.WPF;
+using System.Linq;
+using DotNetForHtml5.Compiler;
 
 namespace DotNetForHtml5.EmulatorWithoutJavascript
 {
-    static class InteropHelpers
+    internal static class InteropHelpers
     {
-#if OPENSILVER
-        internal static void InjectIsRunningInTheSimulator_WorkAround(Assembly jsInteropAssembly)
+        internal static void InjectIsRunningInTheSimulator_WorkAround()
         {
-            InjectPropertyValue("IsRunningInTheSimulator_WorkAround", true, jsInteropAssembly);
-        }
-#endif
-
-        internal static void InjectDOMDocument(DOMDocument document, Assembly jsInteropAssembly)
-        {
-            InjectPropertyValue("DOMDocument", document, jsInteropAssembly);
+            INTERNAL_Simulator.IsRunningInTheSimulator_WorkAround = true;
         }
 
-        internal static void InjectHtmlDocument(JSValue htmlDocument, Assembly jsInteropAssembly)
+        internal static void InjectDOMDocument(DOMDocument document)
         {
-            InjectPropertyValue("HtmlDocument", htmlDocument, jsInteropAssembly);
+            INTERNAL_Simulator.DOMDocument = document;
         }
 
-        internal static void InjectWebControlDispatcherBeginInvoke(WPFBrowserView webControl, Assembly jsInteropAssembly)
+        internal static void InjectHtmlDocument(JSValue htmlDocument)
         {
-            InjectPropertyValue("WebControlDispatcherBeginInvoke", new Action<Action>((method) => webControl.Dispatcher.BeginInvoke(method)), jsInteropAssembly);
+            INTERNAL_Simulator.HtmlDocument = htmlDocument;
         }
 
-        internal static void InjectWebControlDispatcherInvoke(WPFBrowserView webControl, Assembly jsInteropAssembly)
+        internal static void InjectWebControlDispatcherBeginInvoke(WPFBrowserView webControl)
         {
-            InjectPropertyValue("WebControlDispatcherInvoke", new Action<Action, TimeSpan>((method, timeout) => webControl.Dispatcher.Invoke(method, timeout)), jsInteropAssembly);
+            INTERNAL_Simulator.WebControlDispatcherBeginInvoke = 
+                new Action<Action>((method) => webControl.Dispatcher.BeginInvoke(method));
         }
 
-        internal static void InjectWebControlDispatcherCheckAccess(WPFBrowserView webControl, Assembly jsInteropAssembly)
+        internal static void InjectWebControlDispatcherInvoke(WPFBrowserView webControl)
         {
-            InjectPropertyValue("WebControlDispatcherCheckAccess", new Func<bool>(() => webControl.Dispatcher.CheckAccess()), jsInteropAssembly);
+            INTERNAL_Simulator.WebControlDispatcherInvoke =
+                new Action<Action, TimeSpan>((method, timeout) => webControl.Dispatcher.Invoke(method, timeout));
         }
 
-        internal static void InjectConvertBrowserResult(Func<object, object> func, Assembly jsInteropAssembly)
+        internal static void InjectWebControlDispatcherCheckAccess(WPFBrowserView webControl)
         {
-            InjectPropertyValue("ConvertBrowserResult", func, jsInteropAssembly);
+            INTERNAL_Simulator.WebControlDispatcherCheckAccess = new Func<bool>(() => webControl.Dispatcher.CheckAccess());
         }
 
-        internal static void InjectJavaScriptExecutionHandler(dynamic javaScriptExecutionHandler, Assembly jsInteropAssembly)
+        internal static void InjectConvertBrowserResult(Func<object, object> func)
         {
-#if OPENSILVER
-            InjectPropertyValue("DynamicJavaScriptExecutionHandler", javaScriptExecutionHandler, jsInteropAssembly);
-#else
-            InjectPropertyValue("JavaScriptExecutionHandler", javaScriptExecutionHandler, coreAssembly);
-#endif
+            INTERNAL_Simulator.ConvertBrowserResult = func;
         }
 
-        internal static void InjectWpfMediaElementFactory(Assembly jsInteropAssembly)
+        internal static void InjectJavaScriptExecutionHandler(dynamic javaScriptExecutionHandler)
         {
-            InjectPropertyValue("WpfMediaElementFactory", new WpfMediaElementFactory(), jsInteropAssembly);
+            INTERNAL_Simulator.DynamicJavaScriptExecutionHandler = javaScriptExecutionHandler;
         }
 
-        internal static void InjectWebClientFactory(Assembly jsInteropAssembly)
+        internal static void InjectWpfMediaElementFactory()
         {
-            InjectPropertyValue("WebClientFactory", new WebClientFactory(), jsInteropAssembly);
+            INTERNAL_Simulator.WpfMediaElementFactory = new WpfMediaElementFactory();
         }
 
-        internal static void InjectClipboardHandler(Assembly jsInteropAssembly)
+        internal static void InjectWebClientFactory()
         {
-            InjectPropertyValue("ClipboardHandler", new ClipboardHandler(), jsInteropAssembly);
+            INTERNAL_Simulator.WebClientFactory = new WebClientFactory();
         }
 
-        internal static void InjectSimulatorProxy(SimulatorProxy simulatorProxy, Assembly jsInteropAssembly)
+        internal static void InjectClipboardHandler()
         {
-            InjectPropertyValue("SimulatorProxy", simulatorProxy, jsInteropAssembly);
+            INTERNAL_Simulator.ClipboardHandler = new ClipboardHandler();
         }
 
-        internal static dynamic GetPropertyValue(string propertyName, Assembly coreAssembly)
+        internal static void InjectSimulatorProxy(SimulatorProxy simulatorProxy)
         {
-            var typeInCoreAssembly = coreAssembly.GetType("DotNetForHtml5.Core.INTERNAL_Simulator");
-            if (typeInCoreAssembly != null)
-            {
-                PropertyInfo staticProperty = typeInCoreAssembly.GetProperty(propertyName);
-                if (staticProperty != null)
-                {
-                    return staticProperty.GetValue(null);
-                }
-                else
-                {
-                    MessageBox.Show("ERROR: Could not find the public static property \"" + propertyName + "\" in the type \"INTERNAL_Simulator\" in the core assembly.");
-                    return null;
-                }
-            }
-            else
-            {
-                MessageBox.Show("ERROR: Could not find the type \"INTERNAL_Simulator\" in the core assembly.");
-                return null;
-            }
+            INTERNAL_Simulator.SimulatorProxy = simulatorProxy;
         }
 
-        static void InjectPropertyValue(string propertyName, object propertyValue, Assembly jsInteropAssembly)
+        internal static void InjectCodeToDisplayTheMessageBox(Func<string, string, bool, bool> codeToShowTheMessageBoxWithTitleAndButtons)
         {
-            Type typeInCoreAssembly = jsInteropAssembly.GetType("DotNetForHtml5.Core.INTERNAL_Simulator");
-            if (typeInCoreAssembly == null)
-            {
-                MessageBox.Show("ERROR: Could not find the type \"INTERNAL_Simulator\" in the core assembly.");
-                return;
-            }
-
-            PropertyInfo staticProperty = typeInCoreAssembly.GetProperty(propertyName);
-            if (staticProperty == null)
-            {
-                MessageBox.Show("ERROR: Could not find the public static property \"" + propertyName + "\" in the type \"INTERNAL_Simulator\" in the core assembly.");
-                return;
-            }
-
-            staticProperty.SetValue(null, propertyValue);
-        }
-
-        internal static void InjectCodeToDisplayTheMessageBox(
-            Func<string, string, bool, bool> codeToShowTheMessageBoxWithTitleAndButtons,
-            Assembly coreAssembly)
-        {
-            Type type = coreAssembly.GetType("Windows.UI.Xaml.MessageBox");
-            if (type == null)
-            {
-                type = coreAssembly.GetType("System.Windows.MessageBox"); // For "SL Migration" projects.
-            }
+            Type type = ReflectionInUserAssembliesHelper.GetTypeFromCoreAssembly("Windows.UI.Xaml.MessageBox")
+                ?? ReflectionInUserAssembliesHelper.GetTypeFromCoreAssembly("System.Windows.MessageBox");
             if (type != null)
             {
                 PropertyInfo staticProperty = type.GetProperty("INTERNAL_CodeToShowTheMessageBoxWithTitleAndButtons");
@@ -161,11 +111,10 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript
             }
         }
 
-        internal static void RaiseReloadedEvent(Assembly coreAssembly)
+        internal static void RaiseReloadedEvent()
         {
-            var type = coreAssembly.GetType("Windows.UI.Xaml.Application");
-            if (type == null)
-                type = coreAssembly.GetType("System.Windows.Application");
+            var type = ReflectionInUserAssembliesHelper.GetTypeFromCoreAssembly("Windows.UI.Xaml.Application")
+                ?? ReflectionInUserAssembliesHelper.GetTypeFromCoreAssembly("System.Windows.Application");
             var method = type.GetMethod("INTERNAL_RaiseReloadedEvent", BindingFlags.Static | BindingFlags.Public);
             method.Invoke(null, null);
         }

@@ -13,8 +13,6 @@
 *  
 \*====================================================================================*/
 
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -192,9 +190,8 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript.XamlInspection
             else
             {
                 // Get a reference to the "TypeFromStringConverters" class in the Core assembly:
-                Assembly coreAssembly;
-                Type typeFromStringConverter;
-                ReflectionInUserAssembliesHelper.TryGetTypeInCoreAssembly("DotNetForHtml5.Core", null, "TypeFromStringConverters", out typeFromStringConverter, out coreAssembly);
+                Type typeFromStringConverter = ReflectionInUserAssembliesHelper.GetTypeFromCoreAssembly(
+                    "DotNetForHtml5.Core.TypeFromStringConverters");
 
                 // Call the "CanTypeBeConverted" method:
                 MethodInfo canTypeBeConvertedMethod = typeFromStringConverter.GetMethod("CanTypeBeConverted");
@@ -218,9 +215,8 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript.XamlInspection
             else
             {
                 // Get a reference to the "TypeFromStringConverters" class in the Core assembly:
-                Type typeFromStringConverter;
-                Assembly coreAssembly;
-                ReflectionInUserAssembliesHelper.TryGetTypeInCoreAssembly("DotNetForHtml5.Core", null, "TypeFromStringConverters", out typeFromStringConverter, out coreAssembly);
+                Type typeFromStringConverter = ReflectionInUserAssembliesHelper.GetTypeFromCoreAssembly(
+                    "DotNetForHtml5.Core.TypeFromStringConverters");
 
                 // Call the "ConvertFromInvariantString" method:
                 MethodInfo convertFromInvariantStringMethod = typeFromStringConverter.GetMethod("ConvertFromInvariantString");

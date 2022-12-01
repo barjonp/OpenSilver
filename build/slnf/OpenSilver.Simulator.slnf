@@ -4,7 +4,8 @@
     "projects": [
       "Compiler\\Compiler.Common\\Compiler.Common.OpenSilver.csproj",
       "Compiler\\Compiler.ResourcesExtractor\\Compiler.ResourcesExtractor.OpenSilver.csproj",
-      "Simulator\\Simulator\\Simulator.OpenSilver.csproj"
+      "Simulator\\Simulator\\Simulator.OpenSilver.csproj",
+	  "Runtime\\JSInterop\\OpenSilver.JSInterop.csproj"
     ]
   }
 }

@@ -14,9 +14,9 @@
     <license type="expression">MIT</license>
     <dependencies>
       <group targetFramework="net462">
+        <dependency id="OpenSilver.JSInterop" version="$OpenSilverJSInteropVersion$" />
         <dependency id="DotNetBrowser" version="1.21.5" />
         <dependency id="MahApps.Metro" version="1.2.4.0" />
-        <dependency id="Microsoft.Web.Administration" version="7.0.0.0" />
       </group>
     </dependencies>
 
@@ -27,16 +27,16 @@
 
   <files>
     <!-- OpenSilver.Simulator libs -->
-    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/OpenSilver.Simulator.dll" target="lib/net462" />
-    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/OpenSilver.Simulator.pdb" target="lib/net462" />
-    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/OpenSilver.Simulator.xml" target="lib/net462" />
+    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/net462/OpenSilver.Simulator.dll" target="lib/net462" />
+    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/net462/OpenSilver.Simulator.pdb" target="lib/net462" />
+    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/net462/OpenSilver.Simulator.xml" target="lib/net462" />
 
     <!-- OpenSilver targets -->
     <file src="../../src/Targets/OpenSilver.Simulator.targets" target="build/OpenSilver.Simulator.targets" />
 
     <!-- OpenSilver HTML files -->
-    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/simulator_root_opensilver.html" target="contentFiles/any/net462/simulator_root.html" />
-    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/interop_debug_root_opensilver.html" target="contentFiles/any/net462/interop_debug_root.html" />
+    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/net462/simulator_root_opensilver.html" target="contentFiles/any/net462/simulator_root.html" />
+    <file src="../../src/Simulator/Simulator/bin/OpenSilver/Debug/net462/interop_debug_root_opensilver.html" target="contentFiles/any/net462/interop_debug_root.html" />
 
     <!-- OpenSilver compiler -->
     <file src="../../src/Compiler/Compiler.ResourcesExtractor/bin/OpenSilver/Release/net461/OpenSilver.Compiler.Resources.dll" target="tools/OpenSilver.Compiler.Resources.dll" />

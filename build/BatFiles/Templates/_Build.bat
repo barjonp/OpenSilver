@@ -82,7 +82,7 @@ CALL %~dp0_Build_Runtime_Core.bat %CFG% %RUNTIME_CORE_VER% %JSINTEROP_VER%
 CALL %~dp0_Build_Runtime.bat %CFG% %RUNTIME_VER% %RUNTIME_CORE_VER%
 CALL %~dp0_Build_Compiler.bat %CFG% %COMPILER_VER%
 CALL %~dp0_Build_Wasm.bat %CFG% %WASM_VER% %JSINTEROP_VER%
-CALL %~dp0_Build_Simulator.bat %CFG% %SIMULATOR_VER%
+CALL %~dp0_Build_Simulator.bat %CFG% %SIMULATOR_VER% %JSINTEROP_VER%
 CALL %~dp0_Build_Full.bat %CFG% %FULL_VER% %RUNTIME_VER% %COMPILER_VER%
 
 ENDLOCAL

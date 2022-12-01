@@ -60,11 +60,7 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript.LicenseChecking
 
         const string CSHTML5_COOKIES_URL = "https://www.cshtml5.com/"; // "https://localhost:44358"; //to test in local
 
-#if BRIDGE && SILVERLIGHTCOMPATIBLEVERSION
-        const string _trialFeatureID = Constants.SL_MIGRATION_EDITION_FEATURE_ID;
-#else
         const string _trialFeatureID = Constants.COMMERCIAL_EDITION_S_FEATURE_ID;
-#endif
 
         const string _trialFeatureFriendlyName = Constants.COMMERCIAL_EDITION_S_FRIENDLY_NAME;
 
@@ -451,23 +447,6 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript.LicenseChecking
             if (ActivatedFeatureID != null)
                 return true;
 
-#if BRIDGE
-#if SILVERLIGHTCOMPATIBLEVERSION
-            if (ActivationHelpers.IsFeatureEnabled(Constants.SL_MIGRATION_EDITION_FEATURE_ID))
-                ActivatedFeatureID = Constants.SL_MIGRATION_EDITION_FEATURE_ID;
-#else
-            if (ActivationHelpers.IsFeatureEnabled(Constants.ENTERPRISE_EDITION_FEATURE_ID))
-                ActivatedFeatureID = Constants.ENTERPRISE_EDITION_FEATURE_ID;
-            else if (ActivationHelpers.IsFeatureEnabled(Constants.PROFESSIONAL_EDITION_FEATURE_ID))
-                ActivatedFeatureID = Constants.PROFESSIONAL_EDITION_FEATURE_ID;
-            else if (ActivationHelpers.IsFeatureEnabled(Constants.COMMERCIAL_EDITION_S_FEATURE_ID))
-                ActivatedFeatureID = Constants.COMMERCIAL_EDITION_S_FEATURE_ID;
-            else if (ActivationHelpers.IsFeatureEnabled(Constants.COMMERCIAL_EDITION_L_FEATURE_ID))
-                ActivatedFeatureID = Constants.COMMERCIAL_EDITION_L_FEATURE_ID;
-            else if (ActivationHelpers.IsFeatureEnabled(Constants.PREMIUM_SUPPORT_EDITION_FEATURE_ID))
-                ActivatedFeatureID = Constants.PREMIUM_SUPPORT_EDITION_FEATURE_ID;
-#endif
-#else
             if (ActivationHelpers.IsFeatureEnabled(Constants.SL_MIGRATION_EDITION_FEATURE_ID))
                 ActivatedFeatureID = Constants.SL_MIGRATION_EDITION_FEATURE_ID;
             else if (ActivationHelpers.IsFeatureEnabled(Constants.ENTERPRISE_EDITION_FEATURE_ID))
@@ -480,7 +459,7 @@ namespace DotNetForHtml5.EmulatorWithoutJavascript.LicenseChecking
                 ActivatedFeatureID = Constants.COMMERCIAL_EDITION_L_FEATURE_ID;
             else if (ActivationHelpers.IsFeatureEnabled(Constants.PREMIUM_SUPPORT_EDITION_FEATURE_ID))
                 ActivatedFeatureID = Constants.PREMIUM_SUPPORT_EDITION_FEATURE_ID;
-#endif
+
             bool foundKey = ActivatedFeatureID != null;
             return foundKey;
         }

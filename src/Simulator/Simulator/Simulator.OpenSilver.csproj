@@ -1,46 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BAB1B2F6-0152-4194-95A1-7D472D10B2E0}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net462</TargetFramework>
     <AssemblyName>OpenSilver.Simulator</AssemblyName>
-    <RootNamespace>DotNetForHtml5.EmulatorWithoutJavascript</RootNamespace>
+    <RootNamespace>OpenSilver.Simulator</RootNamespace>
     <OutputPath>bin\OpenSilver\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\OpenSilver\$(Configuration)\OpenSilver.Simulator.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile />
+    <DefineConstants>$(DefineConstants);OPENSILVER;DEBUG;TRACE</DefineConstants>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;OPENSILVER</DefineConstants>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Utilities.v4.0" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework">
-      <Aliases>global</Aliases>
-    </Reference>
+    <ProjectReference Include="..\..\Runtime\JSInterop\OpenSilver.JSInterop.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetBrowser" Version="1.21.5" />
+    <PackageReference Include="MahApps.Metro" Version="1.2.4" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.10.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -53,7 +36,6 @@
       <Link>SupportClasses\PathsHelper.cs</Link>
     </Compile>
     <Compile Include="ActivationHelpers_SharedWithOtherProjects.cs" />
-    <Compile Include="Compilation\CompilationState.cs" />
     <Compile Include="Console\ConsoleControl.xaml.cs">
       <DependentUpon>ConsoleControl.xaml</DependentUpon>
     </Compile>
@@ -102,7 +84,6 @@
     <Compile Include="DialogBoxes\InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StaticConstructorsCaller.cs" />
     <Compile Include="SupportClasses\CookiesHelper.cs" />
     <Compile Include="SupportClasses\ReflectionInUserAssembliesHelper.cs" />
     <Compile Include="SupportClasses\ScreenCoordinatesHelper.cs" />
@@ -319,22 +300,5 @@
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\LicensingServiceReference\" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="DotNetBrowser" Version="1.21.5" />
-    <PackageReference Include="MahApps.Metro" Version="1.2.4" />
-    <PackageReference Include="Microsoft.Web.Administration" Version="7.0.0" />
-    <PackageReference Include="NuGet.Build.Tasks.Pack">
-      <Version>5.9.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

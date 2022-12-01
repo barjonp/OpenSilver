@@ -25,8 +25,14 @@ IF "%~1" == "" (
 :select_version
 IF "%~2" == "" (
 	SET /P PKG_VER="%ESC%[92mOpenSilver.Simulator version:%ESC%[0m "
+	SET /P JSINTEROP_VER="%ESC%[92mOpenSilver.JSInterop version:%ESC%[0m "
 ) ELSE (
 	SET PKG_VER=%2
+	IF "%~3" == "" (
+		SET /P JSINTEROP_VER="%ESC%[92mOpenSilver.JSInterop version:%ESC%[0m "
+	) ELSE (
+		SET JSINTEROP_VER=%3
+	)
 )
 
 ECHO. 
@@ -42,7 +48,7 @@ msbuild %BUILD_DIR%\slnf\OpenSilver.Simulator.slnf -p:Configuration=%CFG% -clp:E
 ECHO. 
 ECHO %ESC%[95mPacking %ESC%[0mOpenSilver.Simulator %ESC%[95mNuGet package%ESC%[0m
 ECHO. 
-%BUILD_DIR%\nuget pack %BUILD_DIR%\nuspec\OpenSilver.Simulator.nuspec -OutputDirectory "%BUILD_DIR%\output\OpenSilver" -Properties "PackageVersion=%PKG_VER%;RepositoryUrl=https://github.com/OpenSilver/OpenSilver"
+%BUILD_DIR%\nuget pack %BUILD_DIR%\nuspec\OpenSilver.Simulator.nuspec -OutputDirectory "%BUILD_DIR%\output\OpenSilver" -Properties "PackageVersion=%PKG_VER%;OpenSilverJSInteropVersion=%JSINTEROP_VER%;RepositoryUrl=https://github.com/OpenSilver/OpenSilver"
 
 GOTO :end
 
