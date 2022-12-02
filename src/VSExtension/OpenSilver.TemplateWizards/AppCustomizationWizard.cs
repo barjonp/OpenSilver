@@ -109,7 +109,7 @@ namespace OpenSilver.TemplateWizards
                 switch (window.OpenSilverBuildType)
                 {
                     case OpenSilverBuildType.Stable:
-                        replacementsDictionary.Add("$opensilverpackagename$", "OpenSilver.UWPCompatible");
+                        replacementsDictionary.Add("$opensilverpackagename$", "OpenSilver.UWPCompatible");                        
                         break;
                 }
             }

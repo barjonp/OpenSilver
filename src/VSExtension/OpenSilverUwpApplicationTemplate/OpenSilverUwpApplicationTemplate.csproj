@@ -61,7 +61,17 @@
     <None Include="Icon.ico" />
     <VSTemplate Include="OpenSilverUwpApplication.vstemplate" />
     <None Include="OpenSilverUwpApplication/**" />
-    <None Include="OpenSilverUwpApplication.Browser/**" />
+    <None Include="OpenSilverUwpApplication.Browser\App.cs" />
+    <None Include="OpenSilverUwpApplication.Browser\OpenSilverUwpApplication.Browser.csproj" />
+    <None Include="OpenSilverUwpApplication.Browser\OpenSilverUwpApplication.Browser.vstemplate" />
+    <None Include="OpenSilverUwpApplication.Browser\Pages\Index.cs" />
+    <None Include="OpenSilverUwpApplication.Browser\Program.cs" />
+    <None Include="OpenSilverUwpApplication.Browser\Properties\launchSettings.json" />
+    <None Include="OpenSilverUwpApplication.Browser\wwwroot\BlazorLoader.js" />
+    <None Include="OpenSilverUwpApplication.Browser\wwwroot\favicon.ico" />
+    <None Include="OpenSilverUwpApplication.Browser\wwwroot\index.html" />
+    <None Include="OpenSilverUwpApplication.Browser\wwwroot\loading-indicator.css" />
+    <None Include="OpenSilverUwpApplication.Browser\wwwroot\loading-indicator.js" />
     <None Include="OpenSilverUwpApplication.Simulator/**" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

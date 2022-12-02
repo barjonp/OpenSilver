@@ -1,8 +1,8 @@
 ﻿using DotNetForHtml5;
-using $safeprojectname$.Interop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
+using OpenSilver.WebAssembly;
 
 namespace $safeprojectname$.Pages
 {
