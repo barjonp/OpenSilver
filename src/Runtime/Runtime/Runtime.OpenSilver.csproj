@@ -42,10 +42,9 @@
 	</ItemGroup>
   
 	<ItemGroup>
-		<ProjectReference Include="..\OpenSilver.Xaml\OpenSilver.Xaml.csproj" />
-	</ItemGroup>
-  
-	<ItemGroup>
+    <Compile Include="XAMLREADER\**\*" />
+    <Compile Remove="XAMLREADER\System.Xaml.Markup\INameScope.cs" />
+    <Compile Remove="XAMLREADER\System.Xaml\XamlParseException.cs" />
 		<Compile Include="APP_SUPPORT\JavaScriptExecutionHandler.cs" />
 		<Compile Include="Core\Events\DOMEventManager.cs" />
 		<Compile Include="Core\Main\CopyOnWriteList.cs" />
@@ -230,6 +229,13 @@
 		<Compile Include="System.Windows.Controls\InkPresenter.cs" />
 		<Compile Include="System.Windows.Controls\MatchedTextInfo.cs" />
 		<Compile Include="System.Windows.Controls\WORKINPROGRESS\ObservableObjectCollection.cs" />
+		<Compile Include="System.Windows.Markup\ContentPropertyAttribute.cs" />
+		<Compile Include="System.Windows.Markup\IProvideValueTarget.cs" />
+		<Compile Include="System.Windows.Markup\IXamlTypeResolver.cs" />
+		<Compile Include="System.Windows.Markup\MarkupExtension.cs" />
+		<Compile Include="System.Windows.Markup\NullExtension.cs" />
+		<Compile Include="System.Windows.Markup\XmlnsDefinitionAttribute.cs" />
+		<Compile Include="System.Windows.Markup\XmlnsPrefixAttribute.cs" />
 		<Compile Include="System.Windows.Media.Imaging\PngEncoder.cs" />
 		<Compile Include="System.Windows.Media.Imaging\WriteableBitmap.Wasm.cs" />
 		<Compile Include="System.Windows.Media.Imaging\WriteableBitmap.Simulator.cs" />
@@ -740,6 +746,8 @@
 		<Compile Include="System.Windows\IDataObject.cs" />
 		<Compile Include="System.Windows\RoutedPropertyChangedEventArgs_1.cs" />
 		<Compile Include="System.Windows\RoutedPropertyChangedEventHandler.cs" />
+		<Compile Include="System.Xaml\IMarkupExtension.cs" />
+		<Compile Include="System.Xaml\IRootObjectProvider.cs" />
 		<Compile Include="System.Xml.Linq\XAttribute.cs" />
 		<Compile Include="System.Xml.Linq\XContainer.cs" />
 		<Compile Include="System.Xml.Linq\XDocument.cs" />
