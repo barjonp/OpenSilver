@@ -5,11 +5,11 @@ env:
 on:
   push:
     branches:
-      - develop
+      - feat/fsharp-compiler
 jobs:
   OpenSilver-Build:
     #We should not run these steps on the forks by default.
-    if: github.repository_owner == 'OpenSilver'
+    if: github.repository_owner == 'barjonp'
     runs-on: windows-latest
     steps:
       - uses: microsoft/setup-msbuild@v1.1
@@ -52,9 +52,9 @@ jobs:
         with:
           name: OpenSilver
           path: "build/output/OpenSilver"
-      - name: Upload packages
-        run: |
-           dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/${{ env.GITHUB_REPOSITORY_OWNER_PART }}/index.json
+      # - name: Upload packages
+      #   run: |
+      #      dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/${{ env.GITHUB_REPOSITORY_OWNER_PART }}/index.json
       - name: Upload packages to MyGet
         run: |
-           dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s https://www.myget.org/F/opensilver/api/v2/package
+           dotnet nuget push "build\output\OpenSilver\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s https://www.myget.org/F/opensilver-experiments/api/v2/package
