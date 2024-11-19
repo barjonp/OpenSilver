@@ -26,7 +26,7 @@ public static class Runner
     public static async Task<T> RunApplicationAsync<T>(Func<T> createAppDelegate) where T : Application
     {
         ArgumentNullException.ThrowIfNull(createAppDelegate);
-
+         
         if (await OpenSilverRuntime.StartAsync())
         {
             return createAppDelegate();
